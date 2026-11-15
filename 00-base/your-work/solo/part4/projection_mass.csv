@@ -1,0 +1,5 @@
+graph,side,n_nodes,share_of_nodes,share_of_pagerank,mass_ratio
+crime,0,829,0.600725,0.508433,0.8464
+crime,1,551,0.399275,0.491567,1.2311
+unicodelang,0,254,0.292627,0.483362,1.6518
+unicodelang,1,614,0.707373,0.516638,0.7304

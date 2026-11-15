@@ -1,0 +1,4 @@
+graph,n_nodes,n_edges,elapsed_s,per_pivot_ms
+email-Eu-core,986,16064,2.7923,2.83197
+openflights,3214,18858,16.1921,5.03799
+ca-GrQc,5241,14484,23.2898,4.44376

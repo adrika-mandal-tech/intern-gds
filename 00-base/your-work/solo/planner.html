@@ -1,0 +1,3326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDS — Project Planner, Ontology &amp; Execution Framework</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: #12161c;
+      --panel-2: #1a1f28;
+      --border: #2a313d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --orange: #d29922;
+      --red: #f85149;
+      --purple: #a371f7;
+      --cyan: #39c5cf;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* HEADER */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 24px 0 16px;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+    }
+
+    .tag.accent {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    .tag.green {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(63, 185, 80, 0.08);
+    }
+
+    .tag.purple {
+      border-color: var(--purple);
+      color: var(--purple);
+      background: rgba(163, 113, 247, 0.08);
+    }
+
+    /* PANELS */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel-2 {
+      background: var(--panel-2);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      margin: 16px 0 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    h4 {
+      margin: 12px 0 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    p {
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.85em;
+      background: rgba(110, 118, 129, 0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    /* GRIDS */
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width: 980px) {
+
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin: 8px 0 14px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .pill.green {
+      background: rgba(63, 185, 80, 0.12);
+      color: var(--green);
+      border: 1px solid rgba(63, 185, 80, 0.25);
+    }
+
+    .pill.orange {
+      background: rgba(210, 153, 34, 0.12);
+      color: var(--orange);
+      border: 1px solid rgba(210, 153, 34, 0.25);
+    }
+
+    .pill.red {
+      background: rgba(248, 81, 73, 0.12);
+      color: var(--red);
+      border: 1px solid rgba(248, 81, 73, 0.25);
+    }
+
+    .pill.purple {
+      background: rgba(163, 113, 247, 0.12);
+      color: var(--purple);
+      border: 1px solid rgba(163, 113, 247, 0.25);
+    }
+
+    .pill.cyan {
+      background: rgba(57, 197, 207, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(57, 197, 207, 0.25);
+    }
+
+    .pill.blue {
+      background: rgba(88, 166, 255, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+    }
+
+    /* CALLOUT */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: rgba(88, 166, 255, 0.06);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .callout.green {
+      border-left-color: var(--green);
+      background: rgba(63, 185, 80, 0.06);
+    }
+
+    .callout.orange {
+      border-left-color: var(--orange);
+      background: rgba(210, 153, 34, 0.06);
+    }
+
+    .callout.red {
+      border-left-color: var(--red);
+      background: rgba(248, 81, 73, 0.06);
+    }
+
+    .callout.purple {
+      border-left-color: var(--purple);
+      background: rgba(163, 113, 247, 0.06);
+    }
+
+    /* PHASE BAR */
+    .phase-bar {
+      display: flex;
+      gap: 6px;
+      margin: 16px 0;
+    }
+
+    .phase-step {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      position: relative;
+    }
+
+    .phase-step.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    .phase-step.done {
+      color: var(--green);
+      border-color: rgba(63, 185, 80, 0.3);
+      background: rgba(63, 185, 80, 0.06);
+    }
+
+    .phase-step .num {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .phase-step.parallel {
+      grid-column: span 2;
+    }
+
+    /* MERMAID */
+    .mermaid {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    .mermaid text {
+      fill: var(--text) !important;
+      font-family: var(--font) !important;
+    }
+
+    /* DIRECTORY TREE */
+    .tree {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .tree .dir {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .tree .file {
+      color: var(--text);
+    }
+
+    .tree .ext-py {
+      color: var(--green);
+    }
+
+    .tree .ext-md {
+      color: var(--purple);
+    }
+
+    .tree .ext-json {
+      color: var(--orange);
+    }
+
+    .tree .ext-csv {
+      color: var(--cyan);
+    }
+
+    .tree .ext-sh {
+      color: var(--red);
+    }
+
+    /* CALLOUTS */
+    .note {
+      background: rgba(88, 166, 255, 0.06);
+      border-left: 3px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 10px 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- 1. HEADER -->
+    <header>
+      <h1>GDS Intern Pack — Project Planner, Ontology &amp; Execution Framework</h1>
+      <div class="tags">
+        <span class="tag accent">6 Phases</span>
+        <span class="tag green">7 Graphs</span>
+        <span class="tag purple">12 Claims</span>
+        <span class="tag">Solo Execution</span>
+        <span class="tag">Reproducible</span>
+        <span class="tag orange">RDF/OWL/SHACL</span>
+      </div>
+    </header>
+
+    <!-- 2. EXECUTION PHASES OVERVIEW -->
+    <section class="panel" id="phases">
+      <h2>Execution Phases Overview</h2>
+      <p>The planner is divided into <strong>6 sequential phases</strong> with two parallel tracks starting in P2. Each
+        phase produces tangible outputs that feed the next. Provenance is recorded at every step via sidecar CSVs, JSONL
+        logs, and memo documents.</p>
+
+      <div class="phase-bar">
+        <div class="phase-step done"><span class="num">0</span>Setup</div>
+        <div class="phase-step"><span class="num">1</span>Profile &amp; Calibrate</div>
+        <div class="phase-step"><span class="num">2</span>Centrality &amp; Communities</div>
+        <div class="phase-step"><span class="num">3</span>Approximation &amp; Quality</div>
+        <div class="phase-step"><span class="num">4</span>Capstone &amp; Projection</div>
+        <div class="phase-step"><span class="num">5</span>Replication &amp; Synthesis</div>
+      </div>
+
+      <div class="mermaid">
+        graph LR
+        P0["P0: Setup &amp; Scaffold<br />Gate: ALL pass"]
+        P1["P1: Profile &amp; Calibrate<br />Both"]
+        P2A["P2A: Centrality<br />C02/C06/C12"]
+        P2B["P2B: Communities<br />Prep P3B"]
+        P3A["P3A: Approximation<br />C03/C04/C05"]
+        P3B["P3B: Quality<br />C01"]
+        P4["P4: Capstone &amp; Projection<br />C07/C08/C11"]
+        P5["P5: Replication &amp; Synthesis<br />Claims Strand"]
+        CLAIMS["Claims Strand<br />12 Claims"]
+        ONTO["Ontology<br />gds-owl"]
+        P0 --> P1 --> P2A & P2B --> P3A & P3B --> P4 --> P5
+        P2A --> CLAIMS
+        P2B --> CLAIMS
+        P3A --> CLAIMS
+        P3B --> CLAIMS
+        P4 --> CLAIMS
+        P5 --> ONTO --> CLAIMS
+      </div>
+      <p><strong>Note:</strong> Parts 2A and 2B run in parallel; Parts 3A and 3B run in parallel. All claim evidence is
+        traced to primary sources and graded.</p>
+    </section>
+
+    <!-- 3. GOALS -->
+    <section class="panel" id="goals">
+      <h2>Goals</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Measurement Rigour</h3>
+          <p>Profile <strong>7 graphs</strong>, run algorithms with proper timing, attach provenance. Every number is
+            traceable to a CSV row, every CSV row to a stage, every stage to a command.</p>
+        </div>
+        <div class="card">
+          <h3>Claims Verification</h3>
+          <p>Trace <strong>12 claims</strong> to primary sources, grade evidence as production / research / product /
+            marketing, and fill <code>claims.jsonl</code> with verdicts.</p>
+        </div>
+        <div class="card">
+          <h3>Ontology &amp; Interop</h3>
+          <p>Model the domain in <strong>RDF/OWL</strong>, validate with <strong>SHACL</strong>, export linked data via
+            <code>gds-owl</code>, and query with SPARQL for cross-lab interoperability.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. TECHNOLOGY STACK -->
+    <section class="panel" id="stack">
+      <h2>Technology Stack</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Core Runtime</h3>
+          <table>
+            <tr>
+              <th>Package</th>
+              <th>Version</th>
+              <th>Venv</th>
+            </tr>
+            <tr>
+              <td>Python</td>
+              <td>3.10.20</td>
+              <td><span class="pill green">venv</span></td>
+            </tr>
+            <tr>
+              <td>Python (owl)</td>
+              <td>3.14</td>
+              <td><span class="pill purple">venv-gds-owl</span></td>
+            </tr>
+            <tr>
+              <td>networkx</td>
+              <td>3.4.2</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>python-igraph</td>
+              <td>1.0.0</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>leidenalg</td>
+              <td>0.12.0</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>numpy</td>
+              <td>2.2.6</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>scipy</td>
+              <td>1.15.3</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>pandas</td>
+              <td>2.3.3</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>matplotlib</td>
+              <td>3.10.9</td>
+              <td>venv</td>
+            </tr>
+            <tr>
+              <td>pytest</td>
+              <td>9.1.1</td>
+              <td>venv</td>
+            </tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Semantic Web Stack</h3>
+          <table>
+            <tr>
+              <th>Package</th>
+              <th>Version</th>
+              <th>Venv</th>
+            </tr>
+            <tr>
+              <td>gds-owl</td>
+              <td>0.99.0</td>
+              <td><span class="pill purple">venv-gds-owl</span></td>
+            </tr>
+            <tr>
+              <td>gds-framework</td>
+              <td>0.3.0</td>
+              <td>venv-gds-owl</td>
+            </tr>
+            <tr>
+              <td>gds-interchange</td>
+              <td>0.1.0</td>
+              <td>venv-gds-owl</td>
+            </tr>
+            <tr>
+              <td>rdflib</td>
+              <td>7.6.0</td>
+              <td>venv-gds-owl</td>
+            </tr>
+            <tr>
+              <td>pyshacl</td>
+              <td>0.40.1</td>
+              <td>venv-gds-owl</td>
+            </tr>
+            <tr>
+              <td>owlrl</td>
+              <td>7.6.2</td>
+              <td>venv-gds-owl</td>
+            </tr>
+            <tr>
+              <td>html5rdf</td>
+              <td>1.2.1</td>
+              <td>venv-gds-owl</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout green">
+        <strong>Dual-venv setup:</strong> The core runtime (networkx, igraph, leidenalg, scipy, numpy, pandas,
+        matplotlib) lives in <code>venv</code> (Python 3.10.20). The semantic web stack (rdflib, pyshacl, owlrl,
+        gds-owl, gds-framework, gds-interchange) lives in <code>venv-gds-owl</code> (Python 3.14). Do not mix them.
+        Activate the correct venv before running scripts from each part.
+      </div>
+
+      <h3>Installation Commands</h3>
+      <pre>python3.10 -m venv venv
+source venv/bin/activate
+pip install networkx==3.4.2 python-igraph==1.0.0 leidenalg==0.12.0 numpy==2.2.6 scipy==1.15.3 pandas==2.3.3 matplotlib==3.10.9 pytest==9.1.1
+
+python3.14 -m venv venv-gds-owl
+source venv-gds-owl/bin/activate
+pip install gds-owl==0.99.0 gds-framework==0.3.0 gds-interchange==0.1.0 rdflib==7.6.0 pyshacl==0.40.1 owlrl==7.6.2 html5rdf==1.2.1</pre>
+    </section>
+
+    <!-- 5. PROJECT STRUCTURE -->
+    <section class="panel" id="structure">
+      <h2>Project Structure</h2>
+      <p>Full directory tree from <code>intern-gds/</code> down to <code>your-work/solo/</code>. VEnv directories,
+        corpus, and part folders are all present.</p>
+      <pre class="tree">
+intern-gds/
+├── 00-base/
+│   ├── README.md
+│   ├── check_setup.py
+│   ├── setup_guide.md
+│   └── requirements.txt
+├── part-1/
+│   ├── run_part1.py
+│   ├── check_part1.py
+│   ├── graph_profiles.py
+│   └── config.yaml
+├── part-2/
+│   ├── run_part2a.py
+│   ├── run_part2b.py
+│   ├── check_part2.py
+│   └── config.yaml
+├── part-3/
+│   ├── run_part3a.py
+│   ├── run_part3b.py
+│   ├── check_part3.py
+│   └── config.yaml
+├── part-4/
+│   ├── run_part4.py
+│   ├── check_part4.py
+│   └── config.yaml
+├── 06-claims/
+│   ├── check_claims.py
+│   ├── claims_schema.json
+│   └── grade_evidence.py
+├── life_science_corpus/
+│   ├── ontology/
+│   │   ├── biolink_model.owl.ttl
+│   │   ├── biolink_model.yaml
+│   │   ├── biolink_model.shacl.ttl
+│   │   └── chebi.owl
+│   ├── fetch_log.jsonl
+│   └── papers/
+├── bench/
+│   ├── bench-1-memory.py
+│   ├── bench-2-scale.py
+│   ├── bench-3-resolution.py
+│   ├── bench-4-inflation.py
+│   ├── bench-5-pagerank.py
+│   └── bench-6-weighted.py
+├── venv/                       <span class="dir">[Python 3.10.20]</span>
+├── venv-gds-owl/               <span class="dir">[Python 3.14]</span>
+├── your-work/
+│   └── solo/
+│       ├── claims.jsonl
+│       ├── claims-memo.md
+│       ├── first-impressions.md
+│       ├── planner.html
+│       ├── questions.md
+│       ├── replication.md
+│       ├── research-log.md
+│       ├── synthesis.md
+│       ├── bench/
+│       ├── claims/
+│       ├── charts/
+│       ├── data/
+│       ├── life_science_corpus/
+│       ├── part1/
+│       ├── part2/
+│       ├── part3/
+│       └── part4/
+  </pre>
+    </section>
+
+    <!-- 6. THE SEVEN GRAPHS -->
+    <section class="panel" id="graphs">
+      <h2>The Seven Graphs</h2>
+      <p>All graphs are real-world, offline, and require no internet after initial download. Each carries a
+        <strong>provenance sidecar</strong> recording source URL, SHA-256 checksum, retrieval date, and preprocessing
+        notes.
+      </p>
+      <table>
+        <tr>
+          <th>Graph</th>
+          <th>Nodes</th>
+          <th>Edges</th>
+          <th>Type</th>
+          <th>Weighted</th>
+          <th>Bipartite</th>
+          <th>Ground Truth</th>
+          <th>Skew</th>
+          <th>Components</th>
+          <th>Clustering</th>
+        </tr>
+        <tr>
+          <td><strong>lesmis</strong></td>
+          <td>77</td>
+          <td>254</td>
+          <td>Undirected, unweighted</td>
+          <td>No</td>
+          <td>No</td>
+          <td>Novel factions</td>
+          <td>High</td>
+          <td>1</td>
+          <td>0.57</td>
+        </tr>
+        <tr>
+          <td><strong>unicodelang</strong></td>
+          <td>~300</td>
+          <td>~2,000</td>
+          <td>Directed, unweighted</td>
+          <td>No</td>
+          <td>No</td>
+          <td>Language families</td>
+          <td>Very high</td>
+          <td>1</td>
+          <td>0.42</td>
+        </tr>
+        <tr>
+          <td><strong>crime</strong></td>
+          <td>1,340</td>
+          <td>~2,700</td>
+          <td>Undirected, weighted (crime co-occurrence)</td>
+          <td>Yes</td>
+          <td>No</td>
+          <td>San Francisco districts</td>
+          <td>Moderate</td>
+          <td>1</td>
+          <td>0.31</td>
+        </tr>
+        <tr>
+          <td><strong>email-Eu-core</strong></td>
+          <td>1,005</td>
+          <td>25,571</td>
+          <td>Directed, unweighted</td>
+          <td>No</td>
+          <td>No</td>
+          <td>Department labels (5 ground-truth departments)</td>
+          <td>High</td>
+          <td>1</td>
+          <td>0.40</td>
+        </tr>
+        <tr>
+          <td><strong>openflights</strong></td>
+          <td>3,314</td>
+          <td>16,727</td>
+          <td>Undirected, weighted (distance in km)</td>
+          <td>Yes</td>
+          <td>No</td>
+          <td>Airport continents</td>
+          <td>Very high</td>
+          <td>~100</td>
+          <td>0.52</td>
+        </tr>
+        <tr>
+          <td><strong>facebook_combined</strong></td>
+          <td>4,039</td>
+          <td>88,234</td>
+          <td>Undirected, unweighted</td>
+          <td>No</td>
+          <td>No</td>
+          <td>None</td>
+          <td>Moderate</td>
+          <td>1</td>
+          <td>0.61</td>
+        </tr>
+        <tr>
+          <td><strong>ca-GrQc</strong></td>
+          <td>5,242</td>
+          <td>14,484</td>
+          <td>Undirected, unweighted</td>
+          <td>No</td>
+          <td>No</td>
+          <td>Research areas</td>
+          <td>High</td>
+          <td>~50</td>
+          <td>0.53</td>
+        </tr>
+      </table>
+      <div class="note">
+        <strong>Weight semantics:</strong> In <code>openflights</code> and <code>crime</code>, edges carry distances or
+        co-occurrence counts. These are <em>costs</em>, not strengths: higher weight means harder to traverse. This
+        distinction governs interpretation throughout P3 and P4.
+      </div>
+      <div class="note">
+        <strong>Source citations:</strong> Les Misérables — Knuth (1993). UnicodeLang — ISO 639-3 + Unicode CLDR. Crime
+        — San Francisco Police Department open data. email-Eu-core — Boguná et al. (2009). openflights — OpenFlights.org
+        (CC-BY-SA 4.0). facebook_combined — Leskovec &amp; McAuley (2012). ca-GrQc — Newman (2001).
+      </div>
+    </section>
+
+    <!-- 7. PHASE BREAKDOWN -->
+    <section class="panel" id="phases-breakdown">
+      <h2>Phase Breakdown</h2>
+      <p>Each phase is self-contained with its own gate, outputs, decision rules, and failure modes. No phase may be
+        skipped without explicit written justification in <code>research-log.md</code>.</p>
+
+      <!-- PHASE 0 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P0 — Setup &amp; Scaffold</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill blue">Track: Both</span>
+          <span class="pill orange">Gate: ALL checks pass</span>
+          <span class="pill cyan">Duration: ~30 min</span>
+        </div>
+        <p><strong>Goal:</strong> Verify environment, resolve Python/scipy compatibility, create directory tree, write
+          first-impressions, bootstrap claims and research log, install gds-owl. Nothing in P1 may start until P0 gate
+          is green.</p>
+
+        <h3>Gate Criteria</h3>
+        <p>ALL of the following must pass before advancing to P1:</p>
+        <ul>
+          <li><code>check_setup.py</code> returns <strong>112/112 tests pass</strong></li>
+          <li>7 graphs verified and provenance sidecars recorded</li>
+          <li>provenance recorded for every installed package</li>
+          <li><code>first-impressions.md</code> written with initial observations</li>
+        </ul>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope</th>
+            <th>Out of Scope</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>Python 3.10.20 + venv resolution</li>
+                <li>scipy installation and compatibility</li>
+                <li>Directory tree creation</li>
+                <li>check_setup.py execution and pass</li>
+                <li>first-impressions.md drafting</li>
+                <li>claims.jsonl bootstrap</li>
+                <li>research-log.md creation</li>
+                <li>gds-owl installation</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Running any graph algorithms</li>
+                <li>Data analysis or memo writing</li>
+                <li>Ontology modelling (deferred to P5)</li>
+                <li>Claims evidence grading (deferred to P5)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Deliverables</th>
+            <th>Priority</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>check_setup.py</code> passes (112/112), <code>first-impressions.md</code> written, 7 graphs
+              verified</td>
+            <td>Critical — no advance without this</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>claims.jsonl</code> populated with initial claim structure, <code>research-log.md</code> started
+              with day-1 entries</td>
+            <td>Important — enables tracing throughout</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td><code>planner.html</code> complete (this document), <code>questions.md</code> initial draft</td>
+            <td>Nice to have — useful but not blocking</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>scipy fails to install with Python 3.10.20</td>
+            <td>Use the <code>venv</code> Python 3.10.20 environment; do not switch to system Python</td>
+          </tr>
+          <tr>
+            <td><code>check_setup.py</code> fails any test</td>
+            <td>STOP. Fix before proceeding. Do not advance to P1.</td>
+          </tr>
+          <tr>
+            <td>gds-owl fails to install</td>
+            <td>Continue without ontology; note failure in <code>research-log.md</code>. Ontology work deferred to P5
+              with graceful degradation.</td>
+          </tr>
+          <tr>
+            <td>One graph missing from data directory</td>
+            <td>Do not substitute. Fetch from original source, record provenance, verify with check_setup.</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command / Action</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>0.1 Resolve scipy/Python</td>
+            <td><code>python3.10 -m venv venv && source venv/bin/activate && pip install scipy==1.15.3</code></td>
+            <td>~5 min</td>
+            <td>Working venv with scipy 1.15.3</td>
+          </tr>
+          <tr>
+            <td>0.2 check_setup.py</td>
+            <td><code>python 00-base/check_setup.py</code></td>
+            <td>~2 min</td>
+            <td>112/112 pass OR stop</td>
+          </tr>
+          <tr>
+            <td>0.3 Create directory tree</td>
+            <td><code>mkdir -p your-work/solo/{bench,claims,charts,data,part{1,2,3,4},life_science_corpus}</code></td>
+            <td>~1 min</td>
+            <td>Full directory tree in place</td>
+          </tr>
+          <tr>
+            <td>0.4 Write first-impressions.md</td>
+            <td>Manual: notes on graph sizes, OS, Python version, hardware</td>
+            <td>~10 min</td>
+            <td><code>first-impressions.md</code> (≥3 observations)</td>
+          </tr>
+          <tr>
+            <td>0.5 Bootstrap claims/log</td>
+            <td>Copy skeleton <code>claims.jsonl</code>, create <code>research-log.md</code> with date, machine, hash
+            </td>
+            <td>~10 min</td>
+            <td><code>claims.jsonl</code> (12 rows), <code>research-log.md</code></td>
+          </tr>
+          <tr>
+            <td>0.6 Install gds-owl</td>
+            <td>
+              <code>python3.14 -m venv venv-gds-owl && source venv-gds-owl/bin/activate && pip install gds-owl==0.99.0</code>
+            </td>
+            <td>~5 min</td>
+            <td>gds-owl importable OR note failure</td>
+          </tr>
+        </table>
+
+        <h3>Mermaid — P0 Workflow</h3>
+        <div class="mermaid">
+          graph TD
+          A["Start P0"] --> B["0.1 Resolve Python/scipy"]
+          B --> C["0.2 check_setup.py"]
+          C -->|112/112 pass| D["0.3 Directory tree"]
+          C -->|FAIL| STOP["STOP — fix before proceeding"]
+          D --> E["0.4 first-impressions.md"]
+          E --> F["0.5 Bootstrap claims/log"]
+          F --> G["0.6 Install gds-owl"]
+          G -->|Success| PASS["P0 PASS → P1"]
+          G -->|Fail| PASS2["P0 PASS → P1<br />(note ontology failure)"]
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>scipy import error</td>
+            <td><code>ImportError: scipy</code></td>
+            <td>Use correct venv; reinstall</td>
+          </tr>
+          <tr>
+            <td>check_setup fails</td>
+            <td>Non-zero exit code</td>
+            <td>Read output, fix missing package or graph, rerun</td>
+          </tr>
+          <tr>
+            <td>gds-owl dependency clash</td>
+            <td><code>pip</code> resolver fails</td>
+            <td>Isolate in <code>venv-gds-owl</code>; do not mix</td>
+          </tr>
+          <tr>
+            <td>Graph file missing</td>
+            <td><code>FileNotFoundError</code></td>
+            <td>Fetch from source, add provenance, rerun check_setup</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Location</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>first-impressions.md</code></td>
+            <td><code>your-work/solo/</code></td>
+            <td>Initial observations on environment and graphs</td>
+          </tr>
+          <tr>
+            <td><code>claims.jsonl</code></td>
+            <td><code>your-work/solo/</code></td>
+            <td>12-claim skeleton with due dates</td>
+          </tr>
+          <tr>
+            <td><code>research-log.md</code></td>
+            <td><code>your-work/solo/</code></td>
+            <td>Daily execution journal</td>
+          </tr>
+          <tr>
+            <td><code>questions.md</code></td>
+            <td><code>your-work/solo/</code></td>
+            <td>Open questions from early exploration</td>
+          </tr>
+          <tr>
+            <td><code>planner.html</code></td>
+            <td><code>your-work/solo/</code></td>
+            <td>This document</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PHASE 1 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P1 — Profile &amp; Calibrate</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill blue">Track: Both</span>
+          <span class="pill purple">Claims: C01, C09, C10</span>
+          <span class="pill cyan">Duration: ~60 s run + ~30 min analysis</span>
+        </div>
+        <p><strong>Goal:</strong> Establish baseline profiles for all 7 graphs. Measure PageRank convergence and timing
+          across 10 seeds per graph. Cross-check results between two machines to validate reproducibility. Identify what
+          predicts algorithm cost.</p>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope</th>
+            <th>Out of Scope</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>7-graph structural profiling (nodes, edges, density, diameter, clustering)</li>
+                <li>PageRank on every graph, 10 random seeds each</li>
+                <li>Timing measurements (wall-clock, CPU, repeatability)</li>
+                <li>Cross-machine calibration (two runs, compare hashes)</li>
+                <li>Analysis memo with cost-prediction hypotheses</li>
+                <li>charts/ (5 PNGs: degree distribution, diameter, density, timing, calibration)</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Any other centrality besides PageRank</li>
+                <li>Community detection (deferred to P2)</li>
+                <li>Betweenness or approximation (deferred to P3)</li>
+                <li>Ontology modelling (deferred to P5)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Deliverables</th>
+            <th>Priority</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>profiles.csv</code> (7 rows), <code>pagerank_runs.csv</code> (70 rows),
+              <code>calibration.md</code>, <code>part1-memo.md</code>
+            </td>
+            <td>Critical</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>charts/</code> (5 PNGs), refined <code>first-impressions.md</code></td>
+            <td>Important</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td>Deeper analysis on synthetic graphs (configurable via <code>config.yaml</code>)</td>
+            <td>Optional</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>Round counts differ between two machines</td>
+            <td>STOP. Report the discrepancy in <code>research-log.md</code>. Do not average or discard.</td>
+          </tr>
+          <tr>
+            <td>One graph fails to run</td>
+            <td>Continue with 6. Note failure in <code>questions.md</code> with graph name and error.</td>
+          </tr>
+          <tr>
+            <td>Timing variance > 20% across 10 seeds</td>
+            <td>Investigate; likely graph-size-dependent. Record in memo.</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>1.1 Profile 7 graphs</td>
+            <td><code>python part-1/run_part1.py --who solo --step profile</code></td>
+            <td>~10 s</td>
+            <td><code>profiles.csv</code></td>
+          </tr>
+          <tr>
+            <td>1.2 Run PageRank 10x per graph</td>
+            <td><code>python part-1/run_part1.py --who solo --step pagerank</code></td>
+            <td>~40 s</td>
+            <td><code>pagerank_runs.csv</code></td>
+          </tr>
+          <tr>
+            <td>1.3 Cross-machine calibration</td>
+            <td>Copy CSVs to second machine, run same command, diff outputs</td>
+            <td>~5 min</td>
+            <td><code>calibration.md</code></td>
+          </tr>
+          <tr>
+            <td>1.4 Analyze &amp; memo</td>
+            <td>Manual analysis of CSVs; write <code>part1-memo.md</code></td>
+            <td>~20 min</td>
+            <td><code>part1-memo.md</code></td>
+          </tr>
+        </table>
+
+        <h3>Key Question</h3>
+        <div class="callout purple">What predicts algorithm cost? Node count? Edge count? Degree skew? Density?
+          Formulate a hypothesis and test it with the profile data.</div>
+
+        <h3>Mermaid — P1 Data Flow</h3>
+        <div class="mermaid">
+          graph TD
+          A["7 Graph Files"] --> B["1.1 Profile"]
+          B --> C["profiles.csv<br />(7 rows)"]
+          A --> D["1.2 PageRank x10"]
+          D --> E["pagerank_runs.csv<br />(70 rows)"]
+          C --> F["1.3 Calibration<br />(cross-machine)"]
+          E --> F
+          F --> G["calibration.md"]
+          C --> H["1.4 Analysis"]
+          E --> H
+          G --> H
+          H --> I["part1-memo.md"]
+          I --> J["check_part1.py"]
+          J -->|Pass| K["P1 COMPLETE"]
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>Graph loads but PageRank diverges</td>
+            <td>NaN or infinite values in CSV</td>
+            <td>Check for disconnected components; add personalisation vector</td>
+          </tr>
+          <tr>
+            <td>Cross-machine round mismatch</td>
+            <td>Different iter counts in <code>calibration.md</code></td>
+            <td>STOP, report. Do not force agreement.</td>
+          </tr>
+          <tr>
+            <td>One graph timeout</td>
+            <td>Script hangs on large graph</td>
+            <td>Kill, note in questions.md, continue with 6</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Rows</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>profiles.csv</code></td>
+            <td>7</td>
+            <td>Structural profile of each graph</td>
+          </tr>
+          <tr>
+            <td><code>pagerank_runs.csv</code></td>
+            <td>70</td>
+            <td>Timing and convergence per seed</td>
+          </tr>
+          <tr>
+            <td><code>calibration.md</code></td>
+            <td>—</td>
+            <td>Cross-machine reproducibility report</td>
+          </tr>
+          <tr>
+            <td><code>part1-memo.md</code></td>
+            <td>—</td>
+            <td>Analysis narrative with cost hypotheses</td>
+          </tr>
+          <tr>
+            <td><code>charts/*.png</code></td>
+            <td>5</td>
+            <td>Visualisations for memo</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P2 — Centrality &amp; Communities (Parallel Tracks)</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill green">Track A: Centrality</span>
+          <span class="pill purple">Track B: Communities</span>
+          <span class="pill orange">Claims: C02, C06, C12 (A); Prep P3B (B)</span>
+          <span class="pill cyan">Duration: 2A ~90 s, 2B ~3 min</span>
+        </div>
+        <p><strong>Goal:</strong> Track A measures four centrality measures on 5 graphs, tests pairwise Spearman rank
+          correlation and top-10 overlap, and identifies ranking disagreements. Track B runs Louvain 200 times per graph
+          with 200 seeds to quantify partition stability.</p>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope (2A)</th>
+            <th>In Scope (2B)</th>
+            <th>Out of Scope (Both)</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>5 graphs (lesmis, crime, email-Eu-core, openflights, facebook_combined)</li>
+                <li>Degree, closeness, betweenness, PageRank</li>
+                <li>Pairwise Spearman correlation matrices</li>
+                <li>Top-10 overlap (Jaccard) per pair</li>
+                <li>Disagreement analysis with named nodes</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>5 graphs (same subset)</li>
+                <li>Louvain with 200 random seeds per graph</li>
+                <li>Hash, modularity, ARI recorded per run</li>
+                <li>Spread analysis (std of modularity)</li>
+                <li>Prep: seed range and resolution parameter sweep notes</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Eigenvector centrality (Tier 3)</li>
+                <li>Weighted vs unweighted on openflights (Tier 3)</li>
+                <li>Leiden (deferred to P3B)</li>
+                <li>CPM (deferred to P3B)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Track A Deliverables</th>
+            <th>Track B Deliverables</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>centrality_*.csv</code> (4 files), memos, disagreement analysis</td>
+            <td><code>louvain_runs.csv</code> (1,000 rows), memos</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>charts/</code>, named-node disagreement report</td>
+            <td>Seed-range analysis, stability report</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td>Add eigenvector centrality; weighted vs unweighted on openflights</td>
+            <td>Compare with Leiden; test CPM partition</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>Louvain gives identical partitions across all 200 seeds</td>
+            <td>Check seed range — likely deterministic without resolution parameter sweep</td>
+          </tr>
+          <tr>
+            <td>Spearman high but top-10 overlap low</td>
+            <td>Report both. Explain the trap: rank correlation measures order, not identity of top-k.</td>
+          </tr>
+          <tr>
+            <td>One graph crashes in either track</td>
+            <td>Continue with remaining 4. Note in <code>questions.md</code>.</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>2A.1 Load 5 graphs, compute 4 measures</td>
+            <td><code>python part-2/run_part2a.py --who solo --step compute</code></td>
+            <td>~20 s</td>
+            <td><code>centrality_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>2A.2 Pairwise Spearman + top-10 overlap</td>
+            <td><code>python part-2/run_part2a.py --who solo --step compare</code></td>
+            <td>~30 s</td>
+            <td>Correlation matrices, Jaccard tables</td>
+          </tr>
+          <tr>
+            <td>2A.3 Identify disagreements, write memo</td>
+            <td>Manual</td>
+            <td>~30 min</td>
+            <td><code>part2a-memo.md</code></td>
+          </tr>
+          <tr>
+            <td>2B.1 Load 5 graphs, run Louvain 200x each</td>
+            <td><code>python part-2/run_part2b.py --who solo</code></td>
+            <td>~3 min</td>
+            <td><code>louvain_runs.csv</code></td>
+          </tr>
+          <tr>
+            <td>2B.2 Record hash/modularity/ARI, analyze</td>
+            <td>Manual + <code>check_part2.py --track B</code></td>
+            <td>~20 min</td>
+            <td><code>part2b-memo.md</code></td>
+          </tr>
+        </table>
+
+        <h3>Key Insight</h3>
+        <div class="callout purple"><strong>Correlation does not imply top-k agreement.</strong> Two rankings can have
+          Spearman ρ = 0.95 yet disagree on the top-10 nodes. Always inspect the actual node lists, not just the
+          correlation number.</div>
+
+        <h3>Mermaid — P2 Parallel Tracks</h3>
+        <div class="mermaid">
+          graph TD
+          G5["5 Graphs"] --> A1["2A.1 Compute 4 centralities"]
+          A1 --> A2["2A.2 Spearman + Top-10"]
+          A2 --> A3["2A.3 Disagreement memo"]
+          A3 --> CA["Claims C02/C06/C12"]
+          G5 --> B1["2B.1 Louvain 200x per graph"]
+          B1 --> B2["2B.2 Hash / Modularity / ARI"]
+          B2 --> CB["Prep P3B"]
+          CA --> P3A["P3A"]
+          CB --> P3B["P3B"]
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>Betweenness too slow on 4-graph subset</td>
+            <td>Timeout or swap thrashing</td>
+            <td>Reduce to 3 graphs; note in questions.md</td>
+          </tr>
+          <tr>
+            <td>Louvain ARI NaN</td>
+            <td>Singleton partitions</td>
+            <td>Check resolution parameter; increase minimum community size</td>
+          </tr>
+          <tr>
+            <td>Spearman matrix not symmetric</td>
+            <td>Bug in ranking function</td>
+            <td>Fix ranking; rerun track A</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>centrality_*.csv</code></td>
+            <td>4 files</td>
+            <td>Centrality scores per graph per measure</td>
+          </tr>
+          <tr>
+            <td><code>louvain_runs.csv</code></td>
+            <td>1,000 rows</td>
+            <td>One row per Louvain run (seed, hash, modularity, ARI)</td>
+          </tr>
+          <tr>
+            <td><code>part2a-memo.md</code></td>
+            <td>—</td>
+            <td>Track A analysis and disagreement report</td>
+          </tr>
+          <tr>
+            <td><code>part2b-memo.md</code></td>
+            <td>—</td>
+            <td>Track B stability and spread analysis</td>
+          </tr>
+          <tr>
+            <td><code>charts/*.png</code></td>
+            <td>—</td>
+            <td>Correlation heatmaps, ARI distributions</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P3 — Approximation &amp; Quality (Parallel Tracks)</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill green">Track A: Approximation</span>
+          <span class="pill purple">Track B: Quality</span>
+          <span class="pill orange">Claims: C03, C04, C05 (A); C01 (B)</span>
+          <span class="pill cyan">Duration: 3A ~8 min, 3B ~5 min</span>
+        </div>
+        <p><strong>Goal:</strong> Track A benchmarks betweenness approximation against exact computation on 3 graphs,
+          varying sample sizes and seeds. Track B compares Louvain vs Leiden community quality across 50 seeds on 5
+          graphs, audits community connectivity, and scores against ground truth on email-Eu-core.</p>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope (3A)</th>
+            <th>In Scope (3B)</th>
+            <th>Out of Scope (Both)</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>Exact betweenness on 3 graphs (crime, email-Eu-core, openflights)</li>
+                <li>Sampled at 1%, 2%, 5%, 10%, 25% x 10 seeds each</li>
+                <li>500 airport pairs: weighted (km) vs hop distance</li>
+                <li>Error vs sample-size curves</li>
+                <li>Condition for "can we sample" formulation</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Louvain vs Leiden, 50 seeds x 5 graphs</li>
+                <li>Community connectivity audit (bridge edges)</li>
+                <li>Ground truth on email-Eu-core (5 departments)</li>
+                <li>Similarity score vs bridge-edge fraction</li>
+                <li>Hypothesis about disconnected communities</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Synthetic planted-partition tests (Tier 3)</li>
+                <li>CPM partition exploration (Tier 3)</li>
+                <li>Deep learning on graphs (out of project scope)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Track A Deliverables</th>
+            <th>Track B Deliverables</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>betweenness_*.csv</code>, <code>weights_effect.csv</code>, memos</td>
+            <td><code>community_quality.csv</code>, <code>ground_truth_scores.csv</code>,
+              <code>similarity_vs_bridges.csv</code>, memos
+            </td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>charts/</code>, <code>--full</code> flag on facebook_combined</td>
+            <td>Connectivity audit report, seed-sensitivity analysis</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td>Synthetic planted-partition tests; CPM partition exploration</td>
+            <td>Disconnected-community hypothesis report</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>25% sampling still unreliable (error &gt; 10%)</td>
+            <td>State condition for "can we sample at all" — likely no for global betweenness on this graph class</td>
+          </tr>
+          <tr>
+            <td>Leiden shows same disconnected rate as Louvain</td>
+            <td>Hypothesis: graph shape (community size distribution) dominates algorithm choice</td>
+          </tr>
+          <tr>
+            <td>Ground truth ARI &lt; 0.3 on email-Eu-core</td>
+            <td>Note: departments are organisational, not necessarily community-structure-aligned</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>3A.1 Exact betweenness on 3 graphs</td>
+            <td><code>python part-3/run_part3a.py --who solo --step exact</code></td>
+            <td>~5 min</td>
+            <td><code>betweenness_exact_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>3A.2 Sampled at 1/2/5/10/25% x 10 seeds</td>
+            <td><code>python part-3/run_part3a.py --who solo --step sample</code></td>
+            <td>~3 min</td>
+            <td><code>betweenness_sample_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>3A.3 500 airport pairs weighted vs hop</td>
+            <td><code>python part-3/run_part3a.py --who solo --step weights</code></td>
+            <td>~30 s</td>
+            <td><code>weights_effect.csv</code></td>
+          </tr>
+          <tr>
+            <td>3B.1 Louvain vs Leiden 50 seeds x 5 graphs</td>
+            <td><code>python part-3/run_part3b.py --who solo</code></td>
+            <td>~3 min</td>
+            <td><code>community_quality.csv</code></td>
+          </tr>
+          <tr>
+            <td>3B.2 Community connectivity audit + ground truth</td>
+            <td><code>python part-3/run_part3b.py --who solo --step audit</code></td>
+            <td>~2 min</td>
+            <td><code>ground_truth_scores.csv</code>, <code>similarity_vs_bridges.csv</code></td>
+          </tr>
+        </table>
+
+        <h3>Key Insight</h3>
+        <div class="callout purple"><strong>Different answer is not worse answer.</strong> Approximate betweenness gives
+          different values than exact, but may be perfectly adequate for ranking. Weights are costs (km, co-occurrence
+          counts), not strengths. Higher weight means harder to traverse, not more connected.</div>
+
+        <h3>Mermaid — P3 Parallel Tracks</h3>
+        <div class="mermaid">
+          graph TD
+          G3["3 Graphs"] --> A1["3A.1 Exact Betweenness"]
+          A1 --> A2["3A.2 Sampled 1/2/5/10/25%"]
+          A2 --> A3["3A.3 Weights Effect (500 pairs)"]
+          A3 --> CA["Claims C03/C04/C05"]
+          G5["5 Graphs"] --> B1["3B.1 Louvain vs Leiden x50"]
+          B1 --> B2["3B.2 Connectivity Audit"]
+          B2 --> B3["3B.3 Ground Truth (email-Eu-core)"]
+          B3 --> CB["Claim C01"]
+          CA --> P4["P4"]
+          CB --> P4
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>Exact betweenness OOM on openflights</td>
+            <td>MemoryError</td>
+            <td>Drop openflights from exact set; use 2 graphs</td>
+          </tr>
+          <tr>
+            <td>Sampling error plateaus at &gt;10%</td>
+            <td>No convergence in <code>betweenness_sample_*.csv</code></td>
+            <td>Document in memo; answer "can we sample" = no for global betweenness</td>
+          </tr>
+          <tr>
+            <td>Leiden produces many singleton communities</td>
+            <td>ARI near 0, modularity low</td>
+            <td>Check resolution parameter; increase minimum community size</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>betweenness_*.csv</code></td>
+            <td>Multiple</td>
+            <td>Exact and sampled betweenness scores</td>
+          </tr>
+          <tr>
+            <td><code>weights_effect.csv</code></td>
+            <td>500 rows</td>
+            <td>Weighted vs hop distance comparison</td>
+          </tr>
+          <tr>
+            <td><code>community_quality.csv</code></td>
+            <td>~500 rows</td>
+            <td>Louvain vs Leiden quality per seed</td>
+          </tr>
+          <tr>
+            <td><code>ground_truth_scores.csv</code></td>
+            <td>~250 rows</td>
+            <td>ARI vs ground truth on email-Eu-core</td>
+          </tr>
+          <tr>
+            <td><code>similarity_vs_bridges.csv</code></td>
+            <td>~250 rows</td>
+            <td>Community similarity vs bridge-edge fraction</td>
+          </tr>
+          <tr>
+            <td><code>part3a-memo.md</code></td>
+            <td>—</td>
+            <td>Track A memo</td>
+          </tr>
+          <tr>
+            <td><code>part3b-memo.md</code></td>
+            <td>—</td>
+            <td>Track B memo</td>
+          </tr>
+          <tr>
+            <td><code>charts/*.png</code></td>
+            <td>—</td>
+            <td>Error curves, ARI distributions</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PHASE 4 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P4 — Capstone &amp; Projection</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill blue">Track: Both</span>
+          <span class="pill purple">Claims: C07, C08, C11</span>
+          <span class="pill cyan">Duration: ~30 s run + ~45 min analysis</span>
+        </div>
+        <p><strong>Goal:</strong> Apply PageRank and Louvain to bipartite graphs, project onto each side, compare
+          rankings and communities, and document the consequences of projection choice. This is the single most
+          consequential analytical decision in the pack.</p>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope</th>
+            <th>Out of Scope</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>Bipartite graphs: crime (offender-location), unicodelang (language-script)</li>
+                <li>Raw PageRank + Louvain on bipartite graphs</li>
+                <li>Projection onto side 0</li>
+                <li>Projection onto side 1</li>
+                <li>Ranking comparison (Spearman between raw and projected)</li>
+                <li>Community comparison (ARI between raw and projected)</li>
+                <li>Write <code>part4-memo.md</code></li>
+                <li>Synthesis.md: cross-part narrative</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>Weighted projection (Tier 3)</li>
+                <li>Custom bipartite construction (Tier 3)</li>
+                <li>Algorithm design beyond provided scripts</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Deliverables</th>
+            <th>Priority</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>projection_*.csv</code> (4 files), <code>part4-memo.md</code></td>
+            <td>Critical</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>replication.md</code>, <code>synthesis.md</code></td>
+            <td>Important</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td>Weighted projection, custom bipartite construction</td>
+            <td>Optional</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>Spearman ~0 between raw and projected rankings</td>
+            <td>Report as finding, not error. Projection fundamentally changes the ranking object.</td>
+          </tr>
+          <tr>
+            <td>Projection blowup &gt; 10x edge count</td>
+            <td>Warn in memo. Density may make downstream algorithms impractical. Consider weighted projection or
+              sampling.</td>
+          </tr>
+          <tr>
+            <td>Projection produces dense graph</td>
+            <td>Edge count blows up; algorithms slow. Use weighted projection or sample; document in memo.</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>4.1 Raw PageRank + Louvain on bipartite</td>
+            <td><code>python part-4/run_part4.py --who solo --step raw</code></td>
+            <td>~10 s</td>
+            <td><code>projection_raw_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>4.2 Project onto side 0</td>
+            <td><code>python part-4/run_part4.py --who solo --step proj0</code></td>
+            <td>~10 s</td>
+            <td><code>projection_side0_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>4.3 Project onto side 1</td>
+            <td><code>python part-4/run_part4.py --who solo --step proj1</code></td>
+            <td>~10 s</td>
+            <td><code>projection_side1_*.csv</code></td>
+          </tr>
+          <tr>
+            <td>4.4 Compare rankings and communities</td>
+            <td><code>python part-4/run_part4.py --who solo --step compare</code></td>
+            <td>~5 s</td>
+            <td>Spearman, ARI tables</td>
+          </tr>
+          <tr>
+            <td>4.5 Write memo</td>
+            <td>Manual</td>
+            <td>~40 min</td>
+            <td><code>part4-memo.md</code></td>
+          </tr>
+        </table>
+
+        <h3>Key Insight</h3>
+        <div class="callout purple"><strong>Projection is the single most consequential choice.</strong> Both raw and
+          projected results are correct. Only one answers your question. Document which question you are answering and
+          why you chose that projection.</div>
+
+        <h3>Mermaid — P4 Workflow</h3>
+        <div class="mermaid">
+          graph TD
+          BG["Bipartite Graphs<br />(crime, unicodelang)"] --> R["4.1 Raw PR + Louvain"]
+          BG --> P0["4.2 Project Side 0"]
+          BG --> P1["4.3 Project Side 1"]
+          R --> C["4.4 Compare"]
+          P0 --> C
+          P1 --> C
+          C --> M["4.5 Memo"]
+          M --> REP["Replication"]
+          M --> SYN["Synthesis"]
+          REP --> P5["P5"]
+          SYN --> P5
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>Projection produces dense graph</td>
+            <td>Edge count blows up; algorithms slow</td>
+            <td>Use weighted projection or sample; document in memo</td>
+          </tr>
+          <tr>
+            <td>Raw PageRank undefined on bipartite</td>
+            <td>Zero probability mass</td>
+            <td>Use personalisation vector; restart with damping</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>projection_raw_*.csv</code></td>
+            <td>Raw bipartite rankings</td>
+          </tr>
+          <tr>
+            <td><code>projection_side0_*.csv</code></td>
+            <td>Side-0 projection rankings</td>
+          </tr>
+          <tr>
+            <td><code>projection_side1_*.csv</code></td>
+            <td>Side-1 projection rankings</td>
+          </tr>
+          <tr>
+            <td><code>part4-memo.md</code></td>
+            <td>Narrative on projection consequences</td>
+          </tr>
+          <tr>
+            <td><code>replication.md</code></td>
+            <td>Colleague replication report</td>
+          </tr>
+          <tr>
+            <td><code>synthesis.md</code></td>
+            <td>Cross-part synthesis narrative</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PHASE 5 -->
+      <div class="panel-2" style="padding:16px;border-radius:10px;margin-top:16px;border:1px solid var(--border);">
+        <h2 style="margin-top:0;">P5 — Replication &amp; Synthesis</h2>
+        <div class="tags" style="margin-bottom:12px;">
+          <span class="pill blue">Track: Both</span>
+          <span class="pill purple">Claims: C07, C08, C11 + all claims memo</span>
+          <span class="pill cyan">Duration: ~2–3 hours</span>
+        </div>
+        <p><strong>Goal:</strong> Replicate a colleague's headline finding, complete the claims strand for C07/C08/C11,
+          run <code>check_claims.py</code>, write <code>claims-memo.md</code>, export RDF Turtle via
+          <code>gds-owl</code>, and write <code>synthesis.md</code>.
+        </p>
+
+        <h3>Scope</h3>
+        <table>
+          <tr>
+            <th>In Scope</th>
+            <th>Out of Scope</th>
+          </tr>
+          <tr>
+            <td>
+              <ul>
+                <li>Replicate colleague's headline finding (claim from another solo intern)</li>
+                <li>Complete <code>claims.jsonl</code> for C07, C08, C11</li>
+                <li>Run <code>check_claims.py --who solo</code></li>
+                <li>Write <code>claims-memo.md</code></li>
+                <li>Export RDF Turtle via gds-owl</li>
+                <li>Write <code>synthesis.md</code></li>
+                <li>SHACL validation on experiment.ttl</li>
+                <li>Cross-lab comparison notes</li>
+              </ul>
+            </td>
+            <td>
+              <ul>
+                <li>New graph algorithms (out of scope)</li>
+                <li>Deep learning (out of scope)</li>
+                <li>Streaming / temporal graphs (no timestamps in data)</li>
+              </ul>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Tier Table</h3>
+        <table>
+          <tr>
+            <th>Tier</th>
+            <th>Deliverables</th>
+            <th>Priority</th>
+          </tr>
+          <tr>
+            <td><span class="pill green">Tier 1</span></td>
+            <td><code>replication.md</code>, <code>synthesis.md</code>, <code>claims-memo.md</code>,
+              <code>claims.jsonl</code> (12 rows complete)
+            </td>
+            <td>Critical</td>
+          </tr>
+          <tr>
+            <td><span class="pill orange">Tier 2</span></td>
+            <td><code>experiment.ttl</code> (RDF export), SHACL validation report</td>
+            <td>Important</td>
+          </tr>
+          <tr>
+            <td><span class="pill cyan">Tier 3</span></td>
+            <td>Cross-lab comparison, SPARQL queries over results</td>
+            <td>Optional</td>
+          </tr>
+        </table>
+
+        <h3>Decision Rules</h3>
+        <table>
+          <tr>
+            <th>Condition</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>Replication fails (result does not match)</td>
+            <td>Report honestly as "did not replicate". Do not adjust parameters. Explain discrepancy in
+              <code>replication.md</code>.
+            </td>
+          </tr>
+          <tr>
+            <td>gds-owl unavailable</td>
+            <td>Skip Turtle export. Note in <code>synthesis.md</code>. Ontology strand is gracefully degraded.</td>
+          </tr>
+          <tr>
+            <td>check_claims.py returns &lt; 12 rows</td>
+            <td>Fix missing claims. Rerun until 12 rows pass.</td>
+          </tr>
+        </table>
+
+        <h3>Stage-by-Stage Workflow</h3>
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Command / Action</th>
+            <th>Duration</th>
+            <th>Output</th>
+          </tr>
+          <tr>
+            <td>5.1 Replicate colleague's headline finding</td>
+            <td>Manual: run colleague's script, compare outputs</td>
+            <td>~1 hour</td>
+            <td><code>replication.md</code></td>
+          </tr>
+          <tr>
+            <td>5.2 Complete claims.jsonl for C07/C08/C11</td>
+            <td>Manual: fill evidence, verdict, grade</td>
+            <td>~30 min</td>
+            <td><code>claims.jsonl</code> (12 rows)</td>
+          </tr>
+          <tr>
+            <td>5.3 Run check_claims.py</td>
+            <td><code>python 06-claims/check_claims.py --who solo</code></td>
+            <td>~10 s</td>
+            <td>Pass / fail report</td>
+          </tr>
+          <tr>
+            <td>5.4 Write claims-memo.md</td>
+            <td>Manual</td>
+            <td>~30 min</td>
+            <td><code>claims-memo.md</code></td>
+          </tr>
+          <tr>
+            <td>5.5 Export RDF Turtle via gds-owl</td>
+            <td><code>gds-owl export --format turtle --output experiment.ttl</code></td>
+            <td>~5 min</td>
+            <td><code>experiment.ttl</code></td>
+          </tr>
+          <tr>
+            <td>5.6 Write synthesis.md</td>
+            <td>Manual</td>
+            <td>~30 min</td>
+            <td><code>synthesis.md</code></td>
+          </tr>
+        </table>
+
+        <h3>Mermaid — P5 Workflow</h3>
+        <div class="mermaid">
+          graph TD
+          A["5.1 Replicate Colleague"] --> B["replication.md"]
+          C["5.2 claims.jsonl complete"] --> D["5.3 check_claims.py"]
+          D -->|Pass| E["5.4 claims-memo.md"]
+          D -->|Fail| FIX["Fix missing claims, rerun"]
+          FIX --> D
+          E --> G["5.5 gds-owl export"]
+          G -->|Success| H["experiment.ttl"]
+          G -->|Fail| I["Skip Turtle; note in synthesis"]
+          H --> J["SHACL validation"]
+          I --> K["5.6 synthesis.md"]
+          J --> K
+          B --> K
+          K --> DONE["P5 COMPLETE"]
+        </div>
+
+        <h3>Failure Modes</h3>
+        <table>
+          <tr>
+            <th>Failure</th>
+            <th>Symptom</th>
+            <th>Recovery</th>
+          </tr>
+          <tr>
+            <td>Replication mismatch</td>
+            <td>Numerical difference &gt; tolerance</td>
+            <td>Report honestly. Check random seeds, data versions, graph preprocessing.</td>
+          </tr>
+          <tr>
+            <td>gds-owl import error</td>
+            <td><code>ModuleNotFoundError</code></td>
+            <td>Use <code>venv-gds-owl</code>. If still failing, skip Turtle export.</td>
+          </tr>
+          <tr>
+            <td>SHACL validation fails</td>
+            <td>Conformance = false</td>
+            <td>Inspect validation report; fix Turtle or shapes; rerun</td>
+          </tr>
+          <tr>
+            <td>check_claims.py returns &lt; 12</td>
+            <td>Missing required fields</td>
+            <td>Fill all required fields in claims.jsonl; rerun</td>
+          </tr>
+        </table>
+
+        <h3>Outputs</h3>
+        <table>
+          <tr>
+            <th>File</th>
+            <th>Purpose</th>
+          </tr>
+          <tr>
+            <td><code>replication.md</code></td>
+            <td>Colleague replication report</td>
+          </tr>
+          <tr>
+            <td><code>claims.jsonl</code></td>
+            <td>12 completed claim records with evidence grades</td>
+          </tr>
+          <tr>
+            <td><code>claims-memo.md</code></td>
+            <td>Narrative synthesis of all 12 claims</td>
+          </tr>
+          <tr>
+            <td><code>experiment.ttl</code></td>
+            <td>RDF Turtle export of experimental results</td>
+          </tr>
+          <tr>
+            <td><code>synthesis.md</code></td>
+            <td>Final cross-part narrative and conclusions</td>
+          </tr>
+          <tr>
+            <td>SHACL validation report</td>
+            <td>Conformance report for experiment.ttl</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. PART INTERDEPENDENCIES -->
+    <section class="panel" id="dependencies">
+      <h2>Part Interdependencies</h2>
+      <p>Parts are not independent. Data flows forward through the pipeline, and the claims strand runs alongside every
+        part.</p>
+
+      <h3>Dependency Matrix</h3>
+      <table>
+        <tr>
+          <th>Part</th>
+          <th>Depends on</th>
+          <th>Enables</th>
+          <th>Parallel with</th>
+        </tr>
+        <tr>
+          <td>Part 1</td>
+          <td>P0 (graphs, environment)</td>
+          <td>Part 2, Part 3, Part 4</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Part 2A</td>
+          <td>Part 1 (profiles, timing)</td>
+          <td>Part 3A, Part 4</td>
+          <td>Part 2B</td>
+        </tr>
+        <tr>
+          <td>Part 2B</td>
+          <td>Part 1 (profiles)</td>
+          <td>Part 3B</td>
+          <td>Part 2A</td>
+        </tr>
+        <tr>
+          <td>Part 3A</td>
+          <td>Part 2A (centrality rankings)</td>
+          <td>Part 4</td>
+          <td>Part 3B</td>
+        </tr>
+        <tr>
+          <td>Part 3B</td>
+          <td>Part 2B (Louvain results)</td>
+          <td>Part 4</td>
+          <td>Part 3A</td>
+        </tr>
+        <tr>
+          <td>Part 4</td>
+          <td>Part 1, Part 2, Part 3</td>
+          <td>Part 5</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Part 5</td>
+          <td>Part 4, claims.jsonl (all)</td>
+          <td>Final delivery</td>
+          <td>—</td>
+        </tr>
+      </table>
+
+      <h3>Mermaid — Data Flow Between Parts</h3>
+      <div class="mermaid">
+        graph LR
+        P0["P0 Setup"] --> P1["P1 Profile"]
+        P1 --> P2A["P2A Centrality"]
+        P1 --> P2B["P2B Communities"]
+        P2A --> P3A["P3A Approximation"]
+        P2B --> P3B["P3B Quality"]
+        P3A --> P4["P4 Capstone"]
+        P3B --> P4
+        P4 --> P5["P5 Synthesis"]
+        CLAIMS["Claims Strand"] -.-> P1 & P2A & P2B & P3A & P3B & P4 & P5
+        ONTO["Ontology (gds-owl)"] -.-> P5
+      </div>
+
+      <h3>Critical Path</h3>
+      <p>The critical path is <strong>P0 → P1 → P2A → P3A → P4 → P5</strong>. Delays in P1 or P3A directly delay the
+        final delivery. P2B and P3B run in parallel and have float, but P3B output feeds P4, so P3B must complete before
+        P4 starts.</p>
+
+      <h3>Bottlenecks</h3>
+      <ul>
+        <li><strong>P0 scipy resolution:</strong> If Python/scipy compatibility is not resolved on day 1, nothing else
+          can proceed.</li>
+        <li><strong>P3A exact betweenness:</strong> Exact betweenness on openflights may exceed available memory. This
+          is the single most likely technical blocker.</li>
+        <li><strong>P5 claims strand:</strong> Claims verification requires manual primary-source research. This is outstanding, not blocked — no colleague or external dependency is required. It cannot be automated, parallelized, or rushed.</li>
+      </ul>
+    </section>
+
+    <!-- 9. TIER TABLES (per phase summary) -->
+    <section class="panel" id="tiers">
+      <h2>Tier Definitions (Per Phase)</h2>
+      <p>Tier 1 is <strong>must-pass</strong>. Tier 2 is <strong>important</strong>. Tier 3 is <strong>optional</strong>
+        and may be skipped without justification.</p>
+      <table>
+        <tr>
+          <th>Phase</th>
+          <th>Tier 1 (Must)</th>
+          <th>Tier 2 (Important)</th>
+          <th>Tier 3 (Optional)</th>
+        </tr>
+        <tr>
+          <td><strong>P0</strong></td>
+          <td>check_setup.py 112/112, first-impressions.md</td>
+          <td>claims.jsonl populated, research-log.md started</td>
+          <td>planner.html complete, questions.md draft</td>
+        </tr>
+        <tr>
+          <td><strong>P1</strong></td>
+          <td>profiles.csv (7 rows), pagerank_runs.csv (70 rows), calibration.md, part1-memo.md</td>
+          <td>charts/ (5 PNGs), first-impressions.md refined</td>
+          <td>Deeper analysis on synthetic graphs</td>
+        </tr>
+        <tr>
+          <td><strong>P2A</strong></td>
+          <td>centrality_*.csv (4 files), memos, disagreement analysis</td>
+          <td>charts/, named-node disagreement report</td>
+          <td>Add eigenvector centrality, weighted vs unweighted openflights</td>
+        </tr>
+        <tr>
+          <td><strong>P2B</strong></td>
+          <td>louvain_runs.csv (1,000 rows), memos</td>
+          <td>Seed-range analysis, stability report</td>
+          <td>Compare with Leiden, test CPM</td>
+        </tr>
+        <tr>
+          <td><strong>P3A</strong></td>
+          <td>betweenness_*.csv, weights_effect.csv, memos</td>
+          <td>charts/, --full on facebook_combined</td>
+          <td>Synthetic planted-partition tests, CPM exploration</td>
+        </tr>
+        <tr>
+          <td><strong>P3B</strong></td>
+          <td>community_quality.csv, ground_truth_scores.csv, similarity_vs_bridges.csv, memos</td>
+          <td>Connectivity audit, seed-sensitivity analysis</td>
+          <td>Disconnected-community hypothesis report</td>
+        </tr>
+        <tr>
+          <td><strong>P4</strong></td>
+          <td>projection_*.csv (4 files), part4-memo.md</td>
+          <td>replication.md, synthesis.md</td>
+          <td>Weighted projection, custom bipartite construction</td>
+        </tr>
+        <tr>
+          <td><strong>P5</strong></td>
+          <td>replication.md, synthesis.md, claims-memo.md, claims.jsonl complete</td>
+          <td>experiment.ttl, SHACL validation report</td>
+          <td>Cross-lab comparison, SPARQL queries</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 10. DECISION RULE TABLES -->
+    <section class="panel" id="decisions">
+      <h2>Decision Rule Tables</h2>
+      <p>Every phase has explicit IF-THEN rules. When in doubt, consult this table before acting.</p>
+
+      <h3>P0 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>scipy fails with Python 3.10.20</td>
+          <td>Use venv. Do not switch Python versions without recording the change.</td>
+        </tr>
+        <tr>
+          <td>check_setup.py fails any test</td>
+          <td>STOP. Fix. Rerun. Do not advance.</td>
+        </tr>
+        <tr>
+          <td>gds-owl fails to install</td>
+          <td>Continue without ontology. Note in research-log.md. Defer to P5.</td>
+        </tr>
+        <tr>
+          <td>Graph file missing</td>
+          <td>Fetch from source. Add provenance. Rerun check_setup.</td>
+        </tr>
+      </table>
+
+      <h3>P1 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>Round counts differ between machines</td>
+          <td>STOP and report. Do not average.</td>
+        </tr>
+        <tr>
+          <td>One graph fails to run</td>
+          <td>Continue with 6. Note in questions.md.</td>
+        </tr>
+        <tr>
+          <td>Timing variance &gt; 20% across 10 seeds</td>
+          <td>Investigate. Likely graph-size-dependent. Record in memo.</td>
+        </tr>
+      </table>
+
+      <h3>P2 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>Louvain gives identical partitions across all 200 seeds</td>
+          <td>Check seed range. Likely deterministic without resolution sweep.</td>
+        </tr>
+        <tr>
+          <td>Spearman high but top-10 overlap low</td>
+          <td>Report both. Explain the rank-order vs identity trap.</td>
+        </tr>
+        <tr>
+          <td>One graph crashes in either track</td>
+          <td>Continue with remaining 4. Note in questions.md.</td>
+        </tr>
+      </table>
+
+      <h3>P3 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>25% sampling still unreliable (error &gt; 10%)</td>
+          <td>State condition for "can we sample". Likely no for global betweenness.</td>
+        </tr>
+        <tr>
+          <td>Leiden shows same disconnected rate as Louvain</td>
+          <td>Hypothesis: graph shape dominates algorithm choice.</td>
+        </tr>
+        <tr>
+          <td>Ground truth ARI &lt; 0.3 on email-Eu-core</td>
+          <td>Note: departments are organisational, not community-structural.</td>
+        </tr>
+      </table>
+
+      <h3>P4 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>Spearman ~0 between raw and projected rankings</td>
+          <td>Report as finding. Projection changes the ranking object.</td>
+        </tr>
+        <tr>
+          <td>Projection blowup &gt; 10x edge count</td>
+          <td>Warn in memo. Consider weighted projection or sampling.</td>
+        </tr>
+        <tr>
+          <td>Replication finding differs from colleague</td>
+          <td>Report honestly. Do not adjust parameters to force agreement.</td>
+        </tr>
+      </table>
+
+      <h3>P5 Decisions</h3>
+      <table>
+        <tr>
+          <th>Condition</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>Replication fails</td>
+          <td>Report honestly as "did not replicate". Check seeds, data versions, preprocessing.</td>
+        </tr>
+        <tr>
+          <td>gds-owl unavailable</td>
+          <td>Skip Turtle export. Note in synthesis.md. Graceful degradation.</td>
+        </tr>
+        <tr>
+          <td>check_claims.py returns &lt; 12 rows</td>
+          <td>Fix missing claims. Rerun until 12 rows pass.</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 11. PASSES / QUALITY GATES -->
+    <section class="panel" id="gates">
+      <h2>Passes &amp; Quality Gates</h2>
+      <p>Six quality gates must be satisfied before final delivery. No gate may be bypassed without explicit written
+        justification in <code>research-log.md</code>.</p>
+      <table>
+        <tr>
+          <th>Gate</th>
+          <th>Check</th>
+          <th>Pass Criterion</th>
+          <th>When</th>
+        </tr>
+        <tr>
+          <td><span class="pill green">G0</span></td>
+          <td><code>check_setup.py</code></td>
+          <td>112/112 tests pass</td>
+          <td>End of P0</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">G1</span></td>
+          <td>Provenance sidecars</td>
+          <td>Every CSV has a matching <code>.provenance.json</code> with source URL, SHA-256, retrieval date</td>
+          <td>End of each part</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">G2</span></td>
+          <td>Sample sizes in memo</td>
+          <td>Every number in every memo is traceable to a specific CSV row with a recorded sample size</td>
+          <td>End of each phase</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">G3</span></td>
+          <td>Number traceability</td>
+          <td>Every number in every document is traceable to a CSV row (or explicitly flagged as estimated)</td>
+          <td>End of each phase</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">G4</span></td>
+          <td><code>check_claims.py</code></td>
+          <td>12 rows pass with all required fields filled</td>
+          <td>End of P5</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">G5</span></td>
+          <td>SHACL validation</td>
+          <td><code>pyshacl</code> reports conformance = true on <code>experiment.ttl</code></td>
+          <td>End of P5</td>
+        </tr>
+      </table>
+      <div class="callout orange">
+        <strong>Graceful degradation:</strong> If G5 cannot be satisfied (gds-owl unavailable), document the gap in
+        <code>synthesis.md</code> and mark G5 as "deferred" with reason. All other gates must still pass.
+      </div>
+    </section>
+
+    <!-- 12. SCOPE -->
+    <section class="panel" id="scope">
+      <h2>Scope</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="color:var(--green);">In Scope</h3>
+          <ul>
+            <li>7 real-world graphs (offline, no streaming)</li>
+            <li>4 parts (P1–P4) with reproducible scripts</li>
+            <li>12 claims traced to primary sources</li>
+            <li>Full provenance recording (sidecars, CSVs, JSONL)</li>
+            <li>RDF/OWL/SHACL ontology modelling (P5)</li>
+            <li>Cross-machine calibration and reproducibility checks</li>
+            <li>Bench experiments B1–B6</li>
+            <li>Single-laptop, offline execution after initial setup</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="color:var(--red);">Out of Scope</h3>
+          <ul>
+            <li>Deep learning on graphs</li>
+            <li>Streaming graphs or graph streams</li>
+            <li>Dynamic or temporal graphs (no timestamps in data)</li>
+            <li>Distributed computation</li>
+            <li>Novel algorithm development</li>
+            <li>Large-scale graphs (&gt;100k nodes) without prior approval</li>
+            <li>Online data sources after initial fetch</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Boundaries:</strong> This is an offline-only project. After the initial graph fetch, no internet is
+        required. All execution happens on a single laptop. Results must be reproducible by another person with the same
+        environment specifications.
+      </div>
+    </section>
+
+    <!-- 13. WORKFLOW -->
+    <section class="panel" id="workflow">
+      <h2>Workflow</h2>
+      <h3>Typical Day Cycle</h3>
+      <pre>
+1. Activate correct venv:
+     source venv/bin/activate          (core runtime)
+     source venv-gds-owl/bin/activate  (ontology work)
+
+2. Run phase script:
+     python part-N/run_partN.py --who solo
+
+3. Inspect CSVs:
+     head -20 output.csv
+     wc -l output.csv
+
+4. Update research-log.md:
+     Date, machine, hash, observations, questions
+
+5. Work on memo:
+     Draft findings, attach charts, cite CSV rows
+
+6. Advance claims strand:
+     Update claims.jsonl with new evidence, verdicts, grades
+  </pre>
+
+      <h3>Weekly Cadence</h3>
+      <table>
+        <tr>
+          <th>Day</th>
+          <th>Focus</th>
+          <th>Target Output</th>
+        </tr>
+        <tr>
+          <td>Mon</td>
+          <td>Setup + P0 gate</td>
+          <td>check_setup.py 112/112, first-impressions.md</td>
+        </tr>
+        <tr>
+          <td>Tue</td>
+          <td>P1 run + analysis</td>
+          <td>profiles.csv, pagerank_runs.csv, calibration.md</td>
+        </tr>
+        <tr>
+          <td>Wed</td>
+          <td>P2A run + memo</td>
+          <td>centrality_*.csv, part2a-memo.md</td>
+        </tr>
+        <tr>
+          <td>Thu</td>
+          <td>P2B run + memo</td>
+          <td>louvain_runs.csv, part2b-memo.md</td>
+        </tr>
+        <tr>
+          <td>Fri</td>
+          <td>P3A run</td>
+          <td>betweenness_*.csv, weights_effect.csv</td>
+        </tr>
+      </table>
+      <p><strong>Week 2:</strong> P3B run, P4 run, P5 replication. <strong>Week 3:</strong> Claims completion, ontology
+        export, synthesis.</p>
+
+      <h3>Check-in Checklist</h3>
+      <pre>□ check_setup.py passes (P0)
+□ All provenance sidecars present (G1)
+□ Sample sizes recorded in memos (G2)
+□ Every number traceable to CSV row (G3)
+□ check_claims.py passes (G4)
+□ SHACL validation green (G5)
+□ research-log.md has entries for every day worked
+□ claims.jsonl has 12 complete rows
+□ No secrets or keys committed</pre>
+    </section>
+
+    <!-- 14. LIFE_SCIENCE_CORPUS ONTOLOGY ANALYSIS -->
+    <section class="panel" id="ontology">
+      <h2>Life Science Corpus — Ontology Analysis</h2>
+      <p>Deep analysis of the biolink model ontology in <code>life_science_corpus/ontology/</code>. This ontology
+        provides the TBox for modelling experimental results as linked data.</p>
+
+      <h3>File Inventory</h3>
+      <table>
+        <tr>
+          <th>File</th>
+          <th>Lines</th>
+          <th>Content</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td><code>biolink_model.owl.ttl</code></td>
+          <td>~19,285</td>
+          <td>RDF/Turtle, 948+ classes</td>
+          <td>Primary OWL TBox</td>
+        </tr>
+        <tr>
+          <td><code>biolink_model.yaml</code></td>
+          <td>~15,572</td>
+          <td>LinkML schema</td>
+          <td>Source-of-truth schema</td>
+        </tr>
+        <tr>
+          <td><code>biolink_model.shacl.ttl</code></td>
+          <td>~60,074</td>
+          <td>SHACL shapes</td>
+          <td>KGX format validation</td>
+        </tr>
+        <tr>
+          <td><code>chebi.owl</code></td>
+          <td>~12M</td>
+          <td>ChEBI chemical ontology</td>
+          <td>Chemical entity reference</td>
+        </tr>
+      </table>
+
+      <h3>Biolink Model v4.4.4 Overview</h3>
+      <p>The Biolink Model is an <strong>Entity and Association taxonomy for life sciences data</strong>. It provides a
+        shared vocabulary for knowledge graphs in biomedicine, enabling interoperability across databases, tools, and
+        publications.</p>
+
+      <h3>Core Classes</h3>
+      <table>
+        <tr>
+          <th>Class</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>Node</code></td>
+          <td>Class</td>
+          <td>Base node in a knowledge graph</td>
+        </tr>
+        <tr>
+          <td><code>Edge</code></td>
+          <td>Class</td>
+          <td>Base edge / association</td>
+        </tr>
+        <tr>
+          <td><code>KnowledgeGraph</code></td>
+          <td>Class</td>
+          <td>Container for nodes and edges</td>
+        </tr>
+        <tr>
+          <td><code>Association</code></td>
+          <td>Class</td>
+          <td>Base class for all associations</td>
+        </tr>
+        <tr>
+          <td><code>NamedThing</code></td>
+          <td>Class</td>
+          <td>Entity with a name and identifier</td>
+        </tr>
+        <tr>
+          <td><code>ChemicalEntity</code></td>
+          <td>Class</td>
+          <td>Chemical substance or compound</td>
+        </tr>
+        <tr>
+          <td><code>Disease</code></td>
+          <td>Class</td>
+          <td>Disease or phenotypic condition</td>
+        </tr>
+        <tr>
+          <td><code>Gene</code></td>
+          <td>Class</td>
+          <td>Gene or genomic feature</td>
+        </tr>
+        <tr>
+          <td><code>Protein</code></td>
+          <td>Class</td>
+          <td>Protein or polypeptide</td>
+        </tr>
+        <tr>
+          <td><code>Pathway</code></td>
+          <td>Class</td>
+          <td>Biological pathway</td>
+        </tr>
+      </table>
+
+      <h3>Key Hierarchies</h3>
+      <pre>Entity -> NamedThing -> ChemicalEntity
+                          -> Disease
+                          -> Gene
+                          -> Protein
+
+Association -> ChemicalToEntityAssociation
+            -> GeneToGeneAssociation
+            -> DiseaseToPhenotypicFeatureAssociation</pre>
+
+      <h3>Mixin Pattern</h3>
+      <table>
+        <tr>
+          <th>Mixin</th>
+          <th>Applied To</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td><code>ChemicalToEntityAssociationMixin</code></td>
+          <td>Associations involving chemicals</td>
+          <td>Shared slot structure for chemical associations</td>
+        </tr>
+        <tr>
+          <td><code>EntityToFeatureOrGeneQualifiersMixin</code></td>
+          <td>Associations with qualifiers</td>
+          <td>Standardised qualifier slots</td>
+        </tr>
+      </table>
+
+      <h3>Enumerations</h3>
+      <table>
+        <tr>
+          <th>Enumeration</th>
+          <th>Values (sample)</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td><code>ChemicalEntityDerivativeEnum</code></td>
+          <td>metabolite, byproduct, precursor</td>
+          <td>Classify chemical relationships</td>
+        </tr>
+        <tr>
+          <td><code>AgentTypeEnum</code></td>
+          <td>pathogen, vaccine, drug</td>
+          <td>Classify biological agents</td>
+        </tr>
+        <tr>
+          <td><code>RelationshipQuantifier</code></td>
+          <td>not, decreases, increases, directly_increases</td>
+          <td>Qualify association directionality</td>
+        </tr>
+      </table>
+
+      <h3>Qualifiers</h3>
+      <table>
+        <tr>
+          <th>Qualifier Mixin</th>
+          <th>Slot</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td><code>FrequencyQualifierMixin</code></td>
+          <td><code>frequency_value</code>, <code>frequency_qualifier</code></td>
+          <td>How often an association holds</td>
+        </tr>
+        <tr>
+          <td><code>SpecificityQuantifier</code></td>
+          <td><code>has_specificity</code></td>
+          <td>How specific the association is to a context</td>
+        </tr>
+      </table>
+
+      <h3>External Imports</h3>
+      <p>The Biolink Model imports from multiple external ontologies to reuse well-established identifiers and class
+        hierarchies:</p>
+      <ul>
+        <li><strong>RO</strong> — Relation Ontology (causal relations)</li>
+        <li><strong>NCIT</strong> — NCI Thesaurus (diseases, neoplasms)</li>
+        <li><strong>EFO</strong> — Experimental Factor Ontology (diseases, traits)</li>
+        <li><strong>UBERON</strong> — Uber-anatomy ontology (anatomical structures)</li>
+        <li><strong>CHEBI</strong> — Chemical Entities of Biological Interest</li>
+        <li><strong>UniProt</strong> — Protein knowledgebase</li>
+        <li><strong>KEGG</strong> — Kyoto Encyclopedia of Genes and Genomes</li>
+        <li><strong>MESH</strong> — Medical Subject Headings</li>
+      </ul>
+
+      <h3>SHACL Validation</h3>
+      <p>The <code>biolink_model.shacl.ttl</code> file contains ~60,074 lines of SHACL shapes. These validate that
+        Knowledge Graph eXchange (KGX) format data conforms to the Biolink Model constraints. Every node and edge in a
+        Biolink-compliant KG must pass these shapes.</p>
+
+      <h3>LinkML</h3>
+      <p>The <code>biolink_model.yaml</code> is the canonical LinkML schema. LinkML is a YAML-based modelling language
+        that can generate both OWL (TBox) and SHACL (ABox constraints) from a single source of truth. This eliminates
+        the schema-divergence problem that plagues multi-format ontologies.</p>
+
+      <h3>Curation Annotations</h3>
+      <p>Classes and slots carry provenance and definition annotations:</p>
+      <ul>
+        <li><code>pav:version</code> — version of the Biolink Model</li>
+        <li><code>skos:definition</code> — human-readable definition</li>
+        <li><code>rdfs:subClassOf</code> — class hierarchy with restrictions</li>
+      </ul>
+
+      <h3>Connection to Project</h3>
+      <div class="callout green">
+        <strong>Why this matters:</strong> The Biolink Model provides the <strong>TBox</strong> for modelling
+        experimental results as linked data. <code>gds-owl</code> bridges GDS experiments to Biolink-compatible RDF. In
+        P5, experiment results (centrality scores, community memberships, projection rankings) are exported as RDF
+        triples with Biolink classes and properties, enabling SPARQL query, KGX ingestion, and cross-lab
+        interoperability.
+      </div>
+
+      <h3>fetch_log.jsonl Corpus</h3>
+      <p>The <code>fetch_log.jsonl</code> records bulk paper fetches for the life science corpus:</p>
+      <ul>
+        <li><strong>Bulk papers:</strong> B001–B050 (50 papers)</li>
+        <li><strong>Anchor papers:</strong> A01–A12 (12 papers)</li>
+      </ul>
+      <p><strong>Categories:</strong></p>
+      <table>
+        <tr>
+          <th>Category</th>
+          <th>Focus</th>
+        </tr>
+        <tr>
+          <td>lipid_metabolism</td>
+          <td>Lipid pathways and enzymes</td>
+        </tr>
+        <tr>
+          <td>amino_acid_metabolism</td>
+          <td>Amino acid synthesis and degradation</td>
+        </tr>
+        <tr>
+          <td>drug_repurposing</td>
+          <td>Existing drugs for new indications</td>
+        </tr>
+        <tr>
+          <td>antibiotics</td>
+          <td>Antibiotic resistance and discovery</td>
+        </tr>
+        <tr>
+          <td>biomarkers</td>
+          <td>Disease and treatment biomarkers</td>
+        </tr>
+        <tr>
+          <td>cell_signaling</td>
+          <td>Signal transduction pathways</td>
+        </tr>
+        <tr>
+          <td>gene_disease</td>
+          <td>Gene–disease associations</td>
+        </tr>
+        <tr>
+          <td>cancer_therapeutics</td>
+          <td>Cancer drug targets and mechanisms</td>
+        </tr>
+        <tr>
+          <td>systems_biology</td>
+          <td>Network-level analysis of biological systems</td>
+        </tr>
+        <tr>
+          <td>LOOSE_plant_biology</td>
+          <td>Plant-specific biology (loose category)</td>
+        </tr>
+        <tr>
+          <td>LOOSE_bioinformatics_methods</td>
+          <td>Algorithms and tools (loose category)</td>
+        </tr>
+        <tr>
+          <td>protein_ligand</td>
+          <td>Protein–ligand interactions</td>
+        </tr>
+        <tr>
+          <td>LOOSE_epidemiology</td>
+          <td>Population-level disease spread (loose category)</td>
+        </tr>
+        </ul>
+        <p>Each entry records PMC identifiers, Europe PMC fetch URLs, and SHA-256 checksums for reproducibility.</p>
+    </section>
+
+    <!-- 15. CLAIMS VERIFICATION STRAND -->
+    <section class="panel" id="claims">
+      <h2>Claims Verification Strand</h2>
+      <p>12 claims are traced to primary sources, graded for evidence quality, and recorded in
+        <code>claims.jsonl</code>. Each claim goes through the same method: find primary source, locate quote, check it
+        says what is claimed, fill verdict.
+      </p>
+
+      <h3>Evidence Grades</h3>
+      <table>
+        <tr>
+          <th>Grade</th>
+          <th>Definition</th>
+          <th>Example</th>
+        </tr>
+        <tr>
+          <td><span class="pill green">Production</span></td>
+          <td>Widely reproduced in multiple textbooks and papers</td>
+          <td>"Louvain converges to local optimum"</td>
+        </tr>
+        <tr>
+          <td><span class="pill orange">Research</span></td>
+          <td>Supported by peer-reviewed papers but not universal</td>
+          <td>"PageRank correlates with degree in preferential attachment graphs"</td>
+        </tr>
+        <tr>
+          <td><span class="pill cyan">Product</span></td>
+          <td>Vendor or tool documentation claim</td>
+          <td>"igraph Louvain implementation is O(n log n)"</td>
+        </tr>
+        <tr>
+          <td><span class="pill purple">Marketing</span></td>
+          <td>Claim from marketing material, not peer-reviewed</td>
+          <td>"Our algorithm is the fastest in the world"</td>
+        </tr>
+      </table>
+
+      <h3>Claims Table</h3>
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Topic</th>
+          <th>Due Phase</th>
+          <th>Grade</th>
+          <th>Verdict</th>
+        </tr>
+        <tr>
+          <td>C01</td>
+          <td>Community detection quality on email-Eu-core</td>
+          <td>P3B</td>
+          <td>—</td>
+          <td>You measure this yourself</td>
+        </tr>
+        <tr>
+          <td>C02</td>
+          <td>Centrality measure correlation</td>
+          <td>P2A</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C03</td>
+          <td>Betweenness approximation error vs sample size</td>
+          <td>P3A</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C04</td>
+          <td>Weight semantics: cost vs strength</td>
+          <td>P3A</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C05</td>
+          <td>Sampling condition for global betweenness</td>
+          <td>P3A</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C06</td>
+          <td>Rank correlation vs top-k agreement trap</td>
+          <td>P2A</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C07</td>
+          <td>Projection changes ranking object</td>
+          <td>P4</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C08</td>
+          <td>Projection blowup density warning</td>
+          <td>P4</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C09</td>
+          <td>Cross-machine reproducibility</td>
+          <td>P1</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C10</td>
+          <td>Graph size predicts algorithm cost</td>
+          <td>P1</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C11</td>
+          <td>Louvain stability across seeds</td>
+          <td>P2B</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+        <tr>
+          <td>C12</td>
+          <td>Community detection resolution limit</td>
+          <td>P2B</td>
+          <td>—</td>
+          <td>Pending</td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <strong>C01 Special Note:</strong> You measure this yourself in 3B. There is no primary source to cite — the
+        evidence is the ARI score you compute on email-Eu-core ground truth. Grade as "production" once you have
+        replicated the result.
+      </div>
+
+      <h3>Method</h3>
+      <pre>1. Find primary source (paper, documentation, textbook)
+2. Locate the exact quote supporting the claim
+3. Check that the quote says what the claim asserts (not weaker, not stronger)
+4. Fill verdict: supported / partially supported / contradicted / not found
+5. Assign evidence grade
+6. Record source URL, retrieval date, SHA-256 of PDF</pre>
+    </section>
+
+    <!-- 16. BENCH EXPERIMENTS -->
+    <section class="panel" id="bench">
+      <h2>Bench Experiments (B1–B6)</h2>
+      <p>Six controlled bench experiments answer specific questions about algorithm behaviour, scalability, and
+        interpretation.</p>
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Question</th>
+          <th>Size / Scope</th>
+          <th>When to Use</th>
+        </tr>
+        <tr>
+          <td><strong>B1</strong></td>
+          <td>Memory comparison: adjacency list vs adjacency matrix vs edge list</td>
+          <td>All 7 graphs, varying sizes</td>
+          <td>When choosing a representation for a new graph or predicting memory for larger inputs</td>
+        </tr>
+        <tr>
+          <td><strong>B2</strong></td>
+          <td>Scale ceiling: when does each algorithm stop being usable?</td>
+          <td>Synthetic graphs up to 100k nodes</td>
+          <td>When planning experiments or estimating hardware needs</td>
+        </tr>
+        <tr>
+          <td><strong>B3</strong></td>
+          <td>Resolution limit: can Louvain find small communities?</td>
+          <td>Planted-partition graphs with known community sizes</td>
+          <td>When interpreting Louvain results on real graphs with potentially small communities</td>
+        </tr>
+        <tr>
+          <td><strong>B4</strong></td>
+          <td>Split inflation: random vs structural train/test</td>
+          <td>Link prediction on 3 graphs</td>
+          <td>When evaluating link prediction or any edge-based ML task</td>
+        </tr>
+        <tr>
+          <td><strong>B5</strong></td>
+          <td>PageRank on undirected graphs: does it tell you anything degree does not?</td>
+          <td>All undirected graphs</td>
+          <td>When choosing between PageRank and degree centrality</td>
+        </tr>
+        <tr>
+          <td><strong>B6</strong></td>
+          <td>Weighted communities: do weights change groups or only paths?</td>
+          <td>openflights, crime (weighted graphs)</td>
+          <td>When applying community detection to weighted graphs</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- 17. SIX FAMILIES -->
+    <section class="panel" id="algorithms">
+      <h2>Six Families of Graph Algorithms</h2>
+      <p>The algorithms used in this pack fall into six families. Understanding the family helps interpret results and
+        avoid category errors.</p>
+      <table>
+        <tr>
+          <th>Family</th>
+          <th>Algorithms Used</th>
+          <th>Output</th>
+          <th>Key Interpretation Note</th>
+        </tr>
+        <tr>
+          <td><strong>Centrality</strong></td>
+          <td>PageRank, Degree, Closeness, Betweenness</td>
+          <td>Score per node</td>
+          <td>Higher score = more central. But "central" depends on definition.</td>
+        </tr>
+        <tr>
+          <td><strong>Community Detection</strong></td>
+          <td>Louvain, Leiden</td>
+          <td>Partition (community ID per node)</td>
+          <td>No ground truth in most cases. Modularity is a heuristic.</td>
+        </tr>
+        <tr>
+          <td><strong>Similarity &amp; Prediction</strong></td>
+          <td>Jaccard, Adamic-Adar, preferential attachment</td>
+          <td>Score per node pair</td>
+          <td>Used for link prediction. Not used directly in this pack.</td>
+        </tr>
+        <tr>
+          <td><strong>Paths &amp; Distances</strong></td>
+          <td>Shortest path, betweenness (edge)</td>
+          <td>Distance or betweenness per node/edge</td>
+          <td>Weights are costs. Shorter path = lower cost.</td>
+        </tr>
+        <tr>
+          <td><strong>Projection &amp; Reduction</strong></td>
+          <td>Bipartite projection</td>
+          <td>New graph on one side of bipartite</td>
+          <td>Most consequential choice. Changes the question being answered.</td>
+        </tr>
+        <tr>
+          <td><strong>Structural Properties</strong></td>
+          <td>Connected components, diameter, clustering</td>
+          <td>Global graph statistics</td>
+          <td>Used for profiling (P1) and validation.</td>
+        </tr>
+      </table>
+
+      <h3>The Trap: Weight as Cost vs Weight as Strength</h3>
+      <div class="callout red">
+        <strong>Critical:</strong> In <code>openflights</code> and <code>crime</code>, edges carry distances or
+        co-occurrence counts. These are <em>costs</em>, not strengths. Higher weight means harder to traverse, not more
+        connected. Shortest-path algorithms minimise cost. Community-detection algorithms with modularity treat weights
+        as connection strength — this is the wrong mental model and leads to wrong conclusions. Always ask: does this
+        algorithm treat weight as cost or as strength?
+      </div>
+    </section>
+
+    <!-- 18. ONTOLOGY DEEP DIVE (RDF/OWL) -->
+    <section class="panel" id="ontology-deep">
+      <h2>Ontology Deep Dive — RDF/OWL</h2>
+
+      <h3>Core Classes and Object Properties</h3>
+      <pre>@prefix : &lt;https://example.org/gds/&gt; .
+@prefix biolink: &lt;https://w3id.org/biolink/vocab/&gt; .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+:Run001 a biolink:Study ;
+    rdfs:label "P1 PageRank on lesmis" ;
+    biolink:has_attribute "solo" ;
+    biolink:started_at_time "2026-08-30T00:00:00"^^xsd:dateTime ;
+    biolink:has_input_graph :lesmis ;
+    biolink:has_output :lesmis_pagerank .
+
+:lesmis a biolink:KnowledgeGraph ;
+    rdfs:label "Les Misérables" ;
+    biolink:has_attribute "Knuth-1993" .
+
+:lesmis_pagerank a biolink:NamedThing ;
+    rdfs:label "PageRank scores for lesmis" ;
+    biolink:has_attribute "seed-42" ;
+    biolink:has_attribute "10-iterations" .</pre>
+
+      <h3>Example: Modelling a Part-1 Run in Turtle</h3>
+      <pre>@prefix : &lt;https://example.org/gds/&gt; .
+@prefix prov: &lt;http://www.w3.org/ns/prov#&gt; .
+@prefix dct: &lt;http://purl.org/dc/terms/&gt; .
+
+:Run001 a prov:Activity ;
+    prov:used :lesmis ;
+    prov:generated :lesmis_pagerank_scores ;
+    prov:startedAtTime "2026-08-30T09:00:00"^^xsd:dateTime ;
+    prov:endedAtTime "2026-08-30T09:00:45"^^xsd:dateTime ;
+    prov:wasAssociatedWith :AgentSolo .
+
+:lesmis_pagerank_scores a biolink:InformationContentEntity ;
+    dct:format "text/csv" ;
+    prov:wasDerivedFrom :lesmis ;
+    dct:source &lt;https://www-personal.umich.edu/~mejn/netdata/&gt; .</pre>
+
+      <h3>SHACL Validation Example</h3>
+      <pre>@prefix sh: &lt;http://www.w3.org/ns/shacl#&gt; .
+@prefix biolink: &lt;https://w3id.org/biolink/vocab/&gt; .
+@prefix ex: &lt;https://example.org/gds/&gt; .
+
+:RunShape a sh:NodeShape ;
+    sh:targetClass biolink:Study ;
+    sh:property [
+        sh:path biolink:started_at_time ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path biolink:has_input_graph ;
+        sh:class biolink:KnowledgeGraph ;
+        sh:minCount 1 ;
+    ] .</pre>
+
+      <h3>Why Bother?</h3>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Interoperability</h3>
+          <p>RDF triples can be ingested by any SPARQL-enabled triple store. Results from this project can be joined
+            with external biomedical knowledge graphs without schema mapping.</p>
+        </div>
+        <div class="card">
+          <h3>Validation</h3>
+          <p>SHACL shapes enforce that every exported experiment record has the required fields: graph ID, algorithm,
+            parameters, timestamp, provenance URL. Invalid exports are rejected before archiving.</p>
+        </div>
+        <div class="card">
+          <h3>Reasoning</h3>
+          <p>OWL reasoning can infer types and relationships not explicitly stated. For example, if a run uses
+            <code>openflights</code> (a <code>KnowledgeGraph</code>), a reasoner can infer it is also a
+            <code>NamedThing</code> with an identifier.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Archival</h3>
+          <p>Turtle and RDF are W3C standards with decades-long archival stability. CSV and Markdown may be readable in
+            10 years; Turtle will definitely be readable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. STAGE IMPORTANCE -->
+    <section class="panel" id="stage-importance">
+      <h2>Stage Importance</h2>
+      <p>Not all stages are equal. This section identifies the critical path, bottlenecks, failure modes, and graceful
+        degradation strategies.</p>
+
+      <h3>Critical Path</h3>
+      <p>The critical path is <strong>P0 → P1 → P2A → P3A → P4 → P5</strong>. Delays in any of these phases directly
+        delay final delivery. P2B and P3B run in parallel and have float, but P3B must complete before P4 starts.</p>
+
+      <h3>Bottlenecks</h3>
+      <table>
+        <tr>
+          <th>Bottleneck</th>
+          <th>Phase</th>
+          <th>Impact</th>
+          <th>Mitigation</th>
+        </tr>
+        <tr>
+          <td>scipy / Python compatibility</td>
+          <td>P0</td>
+          <td>Blocks everything</td>
+          <td>Resolve on day 1; use specified venv</td>
+        </tr>
+        <tr>
+          <td>Exact betweenness memory</td>
+          <td>P3A</td>
+          <td>May require dropping openflights from exact set</td>
+          <td>Pre-check memory availability; fall back to 2 graphs</td>
+        </tr>
+        <tr>
+          <td>Replication data availability</td>
+          <td>P5</td>
+          <td>Blocks replication claim</td>
+          <td>Request colleague output early; document gap if unavailable</td>
+        </tr>
+        <tr>
+          <td>gds-owl installation</td>
+          <td>P0</td>
+          <td>Blocks Turtle export (G5)</td>
+          <td>Graceful degradation: skip Turtle, note in synthesis</td>
+        </tr>
+      </table>
+
+      <h3>Failure Modes (Cross-Phase)</h3>
+      <table>
+        <tr>
+          <th>Failure Mode</th>
+          <th>Affected Phases</th>
+          <th>Detection</th>
+          <th>Recovery</th>
+        </tr>
+        <tr>
+          <td>Memory exhaustion</td>
+          <td>P1, P2A, P3A</td>
+          <td>OS kills process (OOM)</td>
+          <td>Reduce graph set; use sampling</td>
+        </tr>
+        <tr>
+          <td>Numerical instability</td>
+          <td>P1, P2A, P3A</td>
+          <td>NaN / Inf in CSVs</td>
+          <td>Check graph connectivity; add damping</td>
+        </tr>
+        <tr>
+          <td>Seed sensitivity</td>
+          <td>P2B, P3B</td>
+          <td>High variance across seeds</td>
+          <td>Increase seed count; report variance</td>
+        </tr>
+        <tr>
+          <td>Graph preprocessing drift</td>
+          <td>P1–P4</td>
+          <td>Different node IDs across machines</td>
+          <td>Use canonical node IDs; record preprocessing steps</td>
+        </tr>
+        <tr>
+          <td>Missing provenance</td>
+          <td>All</td>
+          <td>No .provenance.json sidecar</td>
+          <td>Generate from fetch_log.jsonl; rerun check_setup</td>
+        </tr>
+      </table>
+
+      <h3>Graceful Degradation</h3>
+      <ul>
+        <li><strong>gds-owl unavailable:</strong> Skip Turtle export (G5 deferred). All other gates still pass. Document
+          in synthesis.md.</li>
+        <li><strong>One graph fails:</strong> Continue with remaining 6 or 5. Note in questions.md. Do not substitute.
+        </li>
+        <li><strong>Replication fails:</strong> Report honestly as "did not replicate". Do not adjust parameters.
+          Document discrepancy.</li>
+        <li><strong>Exact betweenness OOM:</strong> Drop openflights from exact set. Use 2 graphs. Document in memo.
+        </li>
+      </ul>
+    </section>
+
+    <!-- 20. FOOTER -->
+    <footer
+      style="border-top:1px solid var(--border);padding:20px 0;margin-top:40px;text-align:center;color:var(--muted);font-size:0.82rem;">
+      <p>Generated: 2026-08-30 | Intern GDS Project Planner | Solo Execution | Reproducible | RDF/OWL/SHACL</p>
+      <p style="margin-top:4px;">6 Phases · 7 Graphs · 12 Claims · 6 Bench Experiments · 6 Algorithm Families · 1
+        Ontology</p>
+    </footer>
+
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+</body>
+
+</html>

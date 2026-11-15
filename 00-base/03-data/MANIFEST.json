@@ -1,0 +1,162 @@
+{
+  "generated_utc": "2026-08-17T12:38:08.311859+00:00",
+  "entries": [
+    {
+      "name": "email-Eu-core",
+      "file": "email-Eu-core.edges.csv",
+      "url": "https://snap.stanford.edu/data/email-Eu-core.txt.gz",
+      "licence": "SNAP (Stanford Network Analysis Project) - free for research and educational use",
+      "description": "Email between members of a European research institution. Directed.",
+      "directed": true,
+      "weighted": false,
+      "bipartite": false,
+      "nodes": 986,
+      "edges": 24929,
+      "sha256": "9fa3264310a16d29d3e457e7da47206b7ca55ba9a51573c7f1503aa1b31f8425",
+      "dropped_self_loops": 642,
+      "dropped_duplicate_rows": 0
+    },
+    {
+      "name": "email-Eu-core (labels)",
+      "file": "email-Eu-core.labels.csv",
+      "url": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gz",
+      "licence": "SNAP (Stanford Network Analysis Project) - free for research and educational use",
+      "description": "Ground-truth department membership for email-Eu-core.",
+      "kind": "ground-truth-labels",
+      "rows": 1005,
+      "distinct_labels": 42,
+      "sha256": "3c4c46eedc946fe8409adffdcc4e1e666f6ffeee9a9e88b0f04c6d79bf7db996"
+    },
+    {
+      "name": "ca-GrQc",
+      "file": "ca-GrQc.edges.csv",
+      "url": "https://snap.stanford.edu/data/ca-GrQc.txt.gz",
+      "licence": "SNAP (Stanford Network Analysis Project) - free for research and educational use",
+      "description": "Collaboration network, arXiv General Relativity and Quantum Cosmology.",
+      "directed": false,
+      "weighted": false,
+      "bipartite": false,
+      "nodes": 5241,
+      "edges": 14484,
+      "sha256": "375d197f21568c968797cce8ceb4b2eda8b8d0defbe9f49c63df3593fa576c29",
+      "dropped_self_loops": 12,
+      "dropped_duplicate_rows": 14484
+    },
+    {
+      "name": "facebook_combined",
+      "file": "facebook_combined.edges.csv",
+      "url": "https://snap.stanford.edu/data/facebook_combined.txt.gz",
+      "licence": "SNAP (Stanford Network Analysis Project) - free for research and educational use",
+      "description": "Combined ego-networks from Facebook.",
+      "directed": false,
+      "weighted": false,
+      "bipartite": false,
+      "nodes": 4039,
+      "edges": 88234,
+      "sha256": "4232d2ffe0a43821f90f1ff189d92d2099fa39ff556446e282c16ce8088cb080",
+      "dropped_self_loops": 0,
+      "dropped_duplicate_rows": 0
+    },
+    {
+      "name": "openflights",
+      "file": "openflights.edges.csv",
+      "url": "https://networks.skewed.de/net/openflights/files/openflights.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "description": "Regularly occurring flights between airports worldwide. Edge weight is great-circle distance in kilometres - a genuine travel cost.",
+      "directed": true,
+      "weighted": true,
+      "bipartite": false,
+      "nodes": 3214,
+      "edges": 36906,
+      "sha256": "f27d98fa956cc4c1dd427db85ea16565ff2939717fcd4ab93c1302d922092580",
+      "dropped_self_loops": 1,
+      "dropped_duplicate_rows": 29864
+    },
+    {
+      "name": "crime (sides)",
+      "file": "crime.sides.csv",
+      "url": "https://networks.skewed.de/net/crime/files/crime.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "kind": "bipartite-side-labels",
+      "rows": 1380,
+      "sha256": "b3351846d51760d6d7915bc784040e7f7a878d5a9279f6ba777432a83d725c8b"
+    },
+    {
+      "name": "crime",
+      "file": "crime.edges.csv",
+      "url": "https://networks.skewed.de/net/crime/files/crime.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "description": "Associations among suspects, victims and witnesses in St Louis crimes, 1990s. Bipartite: persons on one side, crimes on the other.",
+      "directed": false,
+      "weighted": false,
+      "bipartite": true,
+      "nodes": 1380,
+      "edges": 1476,
+      "sha256": "aba363b1a2192fae7553185328821f7d9383ab357a9473345528d1cdf7947d47",
+      "dropped_self_loops": 0,
+      "dropped_duplicate_rows": 0,
+      "side_file": "crime.sides.csv",
+      "side_sizes": {
+        "0": 829,
+        "1": 551
+      },
+      "sides_from": "structural 2-colouring",
+      "meta_column_agrees": true
+    },
+    {
+      "name": "unicodelang (sides)",
+      "file": "unicodelang.sides.csv",
+      "url": "https://networks.skewed.de/net/unicodelang/files/unicodelang.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "kind": "bipartite-side-labels",
+      "rows": 868,
+      "sha256": "a186b606298c7636730ff2f43c8d666737daf03c93d126afcddb1abd5b732574"
+    },
+    {
+      "name": "unicodelang",
+      "file": "unicodelang.edges.csv",
+      "url": "https://networks.skewed.de/net/unicodelang/files/unicodelang.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "description": "Which languages are spoken in which territories. Bipartite: territories and languages.",
+      "directed": false,
+      "weighted": false,
+      "bipartite": true,
+      "nodes": 868,
+      "edges": 1255,
+      "sha256": "7c50fc759d0f9f5d4bf3c5aa280db56af2c424b74b26e88df76b0ee1cae1ddb7",
+      "dropped_self_loops": 0,
+      "dropped_duplicate_rows": 0,
+      "side_file": "unicodelang.sides.csv",
+      "side_sizes": {
+        "0": 254,
+        "1": 614
+      },
+      "sides_from": "structural 2-colouring",
+      "meta_column_agrees": true
+    },
+    {
+      "name": "lesmis",
+      "file": "lesmis.edges.csv",
+      "url": "https://networks.skewed.de/net/lesmis/files/lesmis.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "description": "Co-appearance of characters in Les Miserables. Edge weight is the number of shared scenes - a similarity, NOT a cost.",
+      "directed": false,
+      "weighted": true,
+      "bipartite": false,
+      "nodes": 77,
+      "edges": 254,
+      "sha256": "fb29f185ecf017ac418f4697273ff49b5b9d92c574d1ff625a97946454ba775a",
+      "dropped_self_loops": 0,
+      "dropped_duplicate_rows": 0
+    },
+    {
+      "name": "lesmis (names)",
+      "file": "lesmis.names.csv",
+      "url": "https://networks.skewed.de/net/lesmis/files/lesmis.csv.zip",
+      "licence": "Netzschleuder - see per-network citation in this manifest",
+      "kind": "node-names",
+      "rows": 77,
+      "sha256": "1b0dc21cf8525bc4cbe8b65ae14aa19777552b355ac253e413a1807ca5dbf9f8"
+    }
+  ]
+}

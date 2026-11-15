@@ -1,0 +1,7 @@
+graph,view,nodes,edges,blowup_vs_raw,away_side_max_degree,biggest_single_contribution,project_s
+crime,raw (two-sided),1380,1476,1.0,,,0.0
+crime,projected onto side 0,829,2253,1.526,18,153,0.0034
+crime,projected onto side 1,551,2343,1.587,25,300,0.0028
+unicodelang,raw (two-sided),868,1255,1.0,,,0.0
+unicodelang,projected onto side 0,254,12552,10.002,141,9870,0.0101
+unicodelang,projected onto side 1,614,7514,5.987,69,2346,0.0066

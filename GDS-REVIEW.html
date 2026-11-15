@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GDS Pack Feedback</title>
+<style>
+
+  :root {
+    --ground:#F4F6F5; --surface:#FFFFFF; --surface-2:#EBEEEC;
+    --ink:#161D1F; --ink-soft:#4A575A; --ink-faint:#78868A;
+    --rule:#D3DAD7; --rule-soft:#E3E8E5;
+    --accent:#0F5257; --accent-soft:#DDEAE9;
+    --seal:#B0752A; --seal-soft:#F5E8D4;
+    --ok:#2E6F4E; --ok-soft:#DCEBE2;
+    --warn:#9A6316; --warn-soft:#F6E9D3;
+    --crit:#9C3328; --crit-soft:#F6DFDB;
+    --idle:#5A6570; --idle-soft:#E5E8EA;
+    --serif:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"Cascadia Mono","Cascadia Code","SF Mono",Menlo,Consolas,monospace;
+    --spine:72ch; --wide:1140px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ground:#11151A; --surface:#171C22; --surface-2:#1E252C;
+      --ink:#E6ECEA; --ink-soft:#A6B3B4; --ink-faint:#78888B;
+      --rule:#2C353D; --rule-soft:#232B32;
+      --accent:#5FBDB0; --accent-soft:#16302F;
+      --seal:#D9A05B; --seal-soft:#332613;
+      --ok:#6BBF8E; --ok-soft:#162A1F;
+      --warn:#D6A254; --warn-soft:#2E2413;
+      --crit:#E08579; --crit-soft:#331915;
+      --idle:#8A97A2; --idle-soft:#212830;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#11151A; --surface:#171C22; --surface-2:#1E252C;
+    --ink:#E6ECEA; --ink-soft:#A6B3B4; --ink-faint:#78888B;
+    --rule:#2C353D; --rule-soft:#232B32;
+    --accent:#5FBDB0; --accent-soft:#16302F;
+    --seal:#D9A05B; --seal-soft:#332613;
+    --ok:#6BBF8E; --ok-soft:#162A1F;
+    --warn:#D6A254; --warn-soft:#2E2413;
+    --crit:#E08579; --crit-soft:#331915;
+    --idle:#8A97A2; --idle-soft:#212830;
+  }
+  :root[data-theme="light"]{
+    --ground:#F4F6F5; --surface:#FFFFFF; --surface-2:#EBEEEC;
+    --ink:#161D1F; --ink-soft:#4A575A; --ink-faint:#78868A;
+    --rule:#D3DAD7; --rule-soft:#E3E8E5;
+    --accent:#0F5257; --accent-soft:#DDEAE9;
+    --seal:#B0752A; --seal-soft:#F5E8D4;
+    --ok:#2E6F4E; --ok-soft:#DCEBE2;
+    --warn:#9A6316; --warn-soft:#F6E9D3;
+    --crit:#9C3328; --crit-soft:#F6DFDB;
+    --idle:#5A6570; --idle-soft:#E5E8EA;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--sans); font-size:16.5px; line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--wide); margin:0 auto; padding:0 24px 140px}
+  .spine{max-width:var(--spine)}
+  code,.mono{font-family:var(--mono); font-size:.87em}
+  code{background:var(--surface-2); border:1px solid var(--rule-soft); border-radius:3px; padding:.08em .34em; color:var(--ink)}
+
+  /* ── reveal-on-scroll ─────────────────────────── */
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity .55s ease, transform .55s ease}
+  .reveal.shown{opacity:1; transform:none}
+
+  /* ── masthead ─────────────────────────────────── */
+  .masthead{border-bottom:2px solid var(--ink); padding:60px 0 24px; margin-bottom:42px}
+  .eyebrow{font-family:var(--mono); font-size:.71rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 18px}
+  .masthead h1{font-family:var(--serif); font-size:clamp(2.1rem,5.2vw,3.3rem); line-height:1.06; font-weight:700; letter-spacing:-.02em; margin:0 0 18px; max-width:20ch; text-wrap:balance}
+  .standfirst{font-size:1.11rem; color:var(--ink-soft); max-width:64ch; margin:0 0 24px}
+  .colophon{display:flex; flex-wrap:wrap; gap:10px 26px; font-family:var(--mono); font-size:.75rem; color:var(--ink-faint); padding-top:16px; border-top:1px solid var(--rule-soft)}
+  .colophon b{color:var(--ink-soft); font-weight:600}
+
+  /* ── sections ─────────────────────────────────── */
+  section{margin:0 0 72px}
+  .sec-head{display:flex; align-items:baseline; gap:14px; border-bottom:1px solid var(--rule); padding-bottom:10px; margin-bottom:26px}
+  .sec-num{font-family:var(--mono); font-size:.74rem; color:var(--accent); letter-spacing:.08em; flex:none}
+  .sec-head h2{font-family:var(--serif); font-size:1.68rem; font-weight:700; letter-spacing:-.012em; margin:0; text-wrap:balance}
+  h3{font-size:1.06rem; font-weight:680; margin:32px 0 8px; letter-spacing:-.004em}
+  h4{font-size:.95rem; font-weight:650; margin:22px 0 6px; color:var(--ink-soft)}
+  p{margin:0 0 14px}
+  .spine p,.spine li{max-width:var(--spine)}
+  .lede{font-size:1.04rem; color:var(--ink-soft)}
+
+  /* ── dual lane: plain vs technical ────────────── */
+  .lane{border:1px solid var(--rule); border-left:3px solid var(--accent); background:var(--surface); padding:16px 20px; margin:16px 0}
+  .lane.tech{border-left-color:var(--seal)}
+  .lane-tag{font-family:var(--mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:8px}
+  .lane.tech .lane-tag{color:var(--seal)}
+  .lane p:last-child{margin-bottom:0}
+
+  /* ── stat tiles ───────────────────────────────── */
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:6px 0}
+  .tile{background:var(--surface); padding:18px 16px 16px; transition:background .2s}
+  .tile:hover{background:var(--surface-2)}
+  .tile .v{font-family:var(--serif); font-size:1.9rem; font-weight:700; line-height:1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; display:block; margin-bottom:7px}
+  .tile .k{font-size:.79rem; color:var(--ink-soft); line-height:1.42; display:block}
+  .tile .k b{color:var(--ink); font-weight:620}
+  .v.acc{color:var(--accent)} .v.cri{color:var(--crit)} .v.sea{color:var(--seal)} .v.ok{color:var(--ok)}
+
+  /* ── chips ────────────────────────────────────── */
+  .chip{font-family:var(--mono); font-size:.67rem; letter-spacing:.07em; text-transform:uppercase; padding:2.5px 8px; border:1px solid currentColor; white-space:nowrap; display:inline-block}
+  .chip.ok{color:var(--ok); background:var(--ok-soft)}
+  .chip.warn{color:var(--warn); background:var(--warn-soft)}
+  .chip.crit{color:var(--crit); background:var(--crit-soft)}
+  .chip.acc{color:var(--accent); background:var(--accent-soft)}
+  .chip.sea{color:var(--seal); background:var(--seal-soft)}
+  .chip.idle{color:var(--idle); background:var(--idle-soft)}
+
+  /* ── callouts ─────────────────────────────────── */
+  .callout{border:1px solid var(--rule); border-top:3px solid var(--crit); background:var(--surface); padding:20px 22px; margin:20px 0}
+  .callout.amber{border-top-color:var(--seal)}
+  .callout.good{border-top-color:var(--ok)}
+  .callout.acc{border-top-color:var(--accent)}
+  .callout h3{margin:0 0 10px; font-size:1.07rem}
+  .callout p{font-size:.95rem; color:var(--ink-soft); max-width:72ch}
+  .callout p strong{color:var(--ink)}
+  .callout p:last-child{margin-bottom:0}
+
+  /* ── quote / example ──────────────────────────── */
+  .example{background:var(--surface-2); border-left:2px solid var(--seal); padding:12px 16px; margin:14px 0; font-size:.93rem}
+  .example .label{font-family:var(--mono); font-size:.66rem; letter-spacing:.09em; text-transform:uppercase; color:var(--seal); display:block; margin-bottom:6px}
+  .example em{color:var(--ink)}
+
+  /* ── tables ───────────────────────────────────── */
+  .scroll{overflow-x:auto; border:1px solid var(--rule); background:var(--surface); margin:16px 0}
+  table{border-collapse:collapse; width:100%; font-size:.9rem; min-width:520px}
+  th,td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:top}
+  thead th{font-family:var(--mono); font-size:.69rem; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint); border-bottom:1px solid var(--rule); font-weight:500; white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .15s}
+  tbody tr:hover{background:var(--surface-2)}
+  td.num{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  /* ── mermaid ──────────────────────────────────── */
+  .diagram{background:var(--surface); border:1px solid var(--rule);
+    padding:18px 20px 20px; margin:22px 0; overflow-x:auto; text-align:center;
+    width:min(1460px, calc(100vw - 40px)); margin-left:50%; transform:translateX(-50%)}
+  .diagram .cap{font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:12px; text-align:left}
+  .diagram svg{max-width:100%; height:auto; display:block; margin:0 auto}
+  /* Edge labels are real <p> inside a foreignObject, so the document's paragraph
+     margin lands inside the figures and shifts every label off its arrow. */
+  .diagram svg p{margin:0}
+  /* On a phone, shrinking a 1370px figure to fit gives ~4px labels. Hold each
+     figure at its own natural width and scroll it inside its box instead. */
+  @media (max-width:820px){
+    .diagram{padding-bottom:14px}
+    .diagram svg{max-width:none; width:var(--nat-w); margin:0}
+    .diagram .cap::after{content:' · scroll \2192'; color:var(--accent)}
+  }
+
+  /* ── animated bars ────────────────────────────── */
+  .bars{display:flex; flex-direction:column; gap:13px; margin:18px 0}
+  .bar-row{display:grid; grid-template-columns:200px 1fr 66px; gap:14px; align-items:center}
+  .bar-lab{font-size:.85rem; color:var(--ink-soft)}
+  .bar-lab b{display:block; color:var(--ink); font-weight:620}
+  .bar-tr{background:var(--surface-2); border:1px solid var(--rule); height:26px; overflow:hidden}
+  .bar-fl{height:100%; width:0; transition:width 1.1s cubic-bezier(.22,.9,.28,1)}
+  .bar-fl.crit{background:var(--crit)} .bar-fl.sea{background:var(--seal)}
+  .bar-fl.ok{background:var(--ok)} .bar-fl.acc{background:var(--accent)}
+  .bar-val{font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:.95rem; font-weight:600; text-align:right}
+
+  /* ── pipeline strip ───────────────────────────── */
+  .flow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:var(--mono); font-size:.75rem; margin:14px 0}
+  /* Scoped to .flow deliberately: the inlined figures use mermaid's own markup,
+     where every box is <g class="node"> and several carry class="reuse". An
+     unscoped .node:hover shifted those groups while their arrows stayed put. */
+  .flow .node{background:var(--surface-2); border:1px solid var(--rule); padding:5px 10px; white-space:nowrap; transition:transform .2s, border-color .2s}
+  .flow .node:hover{transform:translateY(-2px); border-color:var(--accent)}
+  .flow .node.new{background:var(--seal-soft); border-color:var(--seal)}
+  .flow .node.reuse{background:var(--accent-soft); border-color:var(--accent)}
+  .flow .arrow{color:var(--ink-faint)}
+
+  /* ── phase cards ──────────────────────────────── */
+  .phases{display:flex; flex-direction:column; gap:10px; margin-top:8px}
+  .phase{display:grid; grid-template-columns:56px 1fr 190px; gap:18px; border:1px solid var(--rule); background:var(--surface); padding:15px 18px; border-left:3px solid var(--idle); transition:transform .18s, box-shadow .18s}
+  .phase:hover{transform:translateX(3px)}
+  .phase.done{border-left-color:var(--ok)}
+  .phase.next{border-left-color:var(--seal)}
+  .phase.block{border-left-color:var(--crit)}
+  .ph-id{font-family:var(--mono); font-size:1.1rem; font-weight:700; color:var(--ink-faint)}
+  .phase.done .ph-id{color:var(--ok)} .phase.next .ph-id{color:var(--seal)} .phase.block .ph-id{color:var(--crit)}
+  .ph-body h3{margin:0 0 5px; font-size:1rem}
+  .ph-body p{margin:0; font-size:.9rem; color:var(--ink-soft); max-width:62ch}
+  .ph-meta{font-family:var(--mono); font-size:.75rem; color:var(--ink-soft)}
+
+  ul.tight{margin:8px 0 16px; padding-left:20px}
+  ul.tight li{margin:0 0 7px; font-size:.95rem; color:var(--ink-soft)}
+  ul.tight li strong{color:var(--ink)}
+  .note{border-left:2px solid var(--seal); background:var(--seal-soft); padding:13px 16px; font-size:.93rem; margin:16px 0}
+
+  /* ── theme toggle ─────────────────────────────── */
+  .toggle{position:fixed; top:16px; right:16px; z-index:50; font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; background:var(--surface); color:var(--ink-soft); border:1px solid var(--rule); padding:7px 12px; cursor:pointer}
+  .toggle:hover{border-color:var(--accent); color:var(--accent)}
+  .toggle:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  /* ── TOC ──────────────────────────────────────── */
+  .toc{border:1px solid var(--rule); background:var(--surface); padding:18px 22px; margin:0 0 44px}
+  .toc h3{margin:0 0 12px; font-size:.95rem}
+  .toc ol{margin:0; padding-left:20px; columns:2; column-gap:32px}
+  .toc li{margin:0 0 6px; font-size:.9rem}
+  .toc a{color:var(--ink-soft); text-decoration:none}
+  .toc a:hover{color:var(--accent); text-decoration:underline}
+
+  a{color:var(--accent)}
+  a:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important}
+    .reveal{opacity:1; transform:none}
+    .bar-fl{transition:none}
+  }
+  @media (max-width:760px){
+    .phase{grid-template-columns:44px 1fr}
+    .ph-meta{grid-column:1/-1}
+    .bar-row{grid-template-columns:130px 1fr 54px}
+    .toc ol{columns:1}
+  }
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" aria-label="Toggle colour theme">theme</button>
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">intern-gds · feedback on your submission</p>
+  <h1>Every number you read from a file is exact. Every number you estimated is wrong.</h1>
+  <p class="standfirst">
+    All four parts ran, on unmodified pack code, and all six checkers pass. This note walks
+    through what reproduces, seven figures that need correcting, and the one strand still
+    open. Every number below was recomputed from the CSVs in your own submission.
+  </p>
+  <div class="colophon">
+    <span><b>Submission</b> <span class="mono">GDS-work.zip</span>, 2026-09-06</span>
+    <span><b>Method</b> your memo numbers re-derived from your CSVs; checkers re-run</span>
+    <span><b>Next step</b> a correction pass, then the claims strand</span>
+    <span><b>Sent</b> 2026-09-07</span>
+  </div>
+</header>
+
+<nav class="toc reveal">
+  <h3>What's in here</h3>
+  <ol>
+    <li><a href="#status">Where this stands</a></li>
+    <li><a href="#strong">What reproduces exactly</a></li>
+    <li><a href="#pattern">The pattern behind most of the corrections</a></li>
+    <li><a href="#tilde">Numbers that don't match your CSVs</a></li>
+    <li><a href="#direction">Three rows where the direction is reversed</a></li>
+    <li><a href="#baserate">The crime bridge finding needs its base rate</a></li>
+    <li><a href="#backwards">Two claims to retract</a></li>
+    <li><a href="#reports">Three changes needed in the HTML reports</a></li>
+    <li><a href="#spine">The claims strand and the log</a></li>
+    <li><a href="#packbug">One of these is our fault, not yours</a></li>
+    <li><a href="#next">Your next pass</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════════ 1 ══════════════ -->
+<section id="status" class="reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Where this stands</h2></div>
+
+  <p class="lede spine">The measurement work is done and the raw data is trustworthy. The write-up needs a correction pass.</p>
+
+  <div class="tiles">
+    <div class="tile"><span class="v ok">6/6</span><span class="k"><b>pack checkers pass</b> — Parts 1, 2A, 2B, 3A, 3B, 4</span></div>
+    <div class="tile"><span class="v ok">6/6</span><span class="k"><b>runners unmodified</b> — byte-identical to the pristine pack</span></div>
+    <div class="tile"><span class="v ok">2,320</span><span class="k"><b>algorithm runs</b> recorded one row per run, no summaries</span></div>
+    <div class="tile"><span class="v cri">7</span><span class="k"><b>figures that disagree with your own CSVs</b></span></div>
+    <div class="tile"><span class="v cri">0/12</span><span class="k"><b>claims verified</b> — the file is unchanged from the seed</span></div>
+    <div class="tile"><span class="v cri">5</span><span class="k"><b>deliverables still on the blank template</b></span></div>
+  </div>
+
+  <div class="lane">
+    <span class="lane-tag">The short version</span>
+    <p>
+      You ran the experiments properly. Your <code>run_part*.py</code> files are byte-identical
+      to ours, so nothing about the pipeline is in question and none of the CSVs need
+      regenerating. What needs fixing is in the memos: in seven places the stated figure
+      doesn't match the file it cites. All seven are one recompute away.
+    </p>
+  </div>
+
+  <div class="lane tech">
+    <span class="lane-tag">How these were found</span>
+    <p>
+      Every claim in every memo was re-derived from the CSV it names, in a fresh pass over
+      <code>your-work/solo/</code>. The pack's <code>check_part*.py</code> were re-run against
+      your outputs, and separately given two deliberate failure cases to confirm they are
+      capable of failing at all — worth doing before trusting any green light, including ours.
+    </p>
+  </div>
+
+  <div class="note">
+    <b>You did both tracks solo on a pack built for a pair.</b> That's double the intended
+    volume, and both <code>calibration.md</code> and <code>replication.md</code> open by
+    stating plainly that the cross-machine comparison can't be done. Saying so is the right
+    call and is exactly what the brief asks for when something is unavailable.
+  </div>
+</section>
+
+<!-- ══════════════ 2 ══════════════ -->
+<section id="strong" class="reveal">
+  <div class="sec-head"><span class="sec-num">02</span><h2>What reproduces exactly</h2></div>
+
+  <p class="lede spine">Part 2B makes twenty numeric claims across four tables. All twenty recompute to the digit.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Graph</th><th>Distinct partitions / 200</th><th>Mean ARI vs run 1</th><th>Modularity spread</th><th>Checks out</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">unicodelang</span></td><td class="num">200</td><td class="num">0.7335</td><td class="num">0.0095</td><td><span class="chip ok">exact</span></td></tr>
+        <tr><td><span class="mono">crime</span></td><td class="num">189</td><td class="num">0.8774</td><td class="num">0.0022</td><td><span class="chip ok">exact</span></td></tr>
+        <tr><td><span class="mono">email-Eu-core</span></td><td class="num">200</td><td class="num">0.7793</td><td class="num">0.0176</td><td><span class="chip ok">exact</span></td></tr>
+        <tr><td><span class="mono">openflights</span></td><td class="num">200</td><td class="num">0.7620</td><td class="num">0.0358</td><td><span class="chip ok">exact</span></td></tr>
+        <tr><td><span class="mono">ca-GrQc</span></td><td class="num">200</td><td class="num">0.6180</td><td class="num">0.0048</td><td><span class="chip ok">exact</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="spine">
+    So does the component count you quote for <span class="mono">ca-GrQc</span> (354) and
+    <span class="mono">unicodelang</span> (5) — pulled from a different file in a different
+    part, and still right.
+  </p>
+
+  <div class="callout good">
+    <h3>Your Part 3B headline matches a measurement taken here independently</h3>
+    <p>
+      Across 5 graphs × 50 seeds you measured <strong>6 internally disconnected communities
+      out of 15,374 assessed for Louvain, and 0 out of 15,457 for Leiden</strong>, against a
+      published claim of up to 16%. That is the same result we hold, reached without sight of
+      ours. <strong>You also reported the gap rather than smoothing it</strong>, which is the
+      harder half.
+    </p>
+  </div>
+
+  <p class="spine">Three more blocks verify cell-for-cell:</p>
+
+  <ul class="tight spine">
+    <li><strong>Part 3A §2.2</strong> — the fifteen-cell sampling table, including every worst-case value.</li>
+    <li><strong>Part 3A §2.4</strong> — 450/500 routes differ, median 1.16×, p90 1.74×, worst 5.38×, and 159/450 with no hop saving.</li>
+    <li><strong>Part 3B §2.1 and Part 4 §2.1–2.3</strong> — the disconnected/fragile/pendant table, and all of the projection mass, blow-up and ranking figures.</li>
+  </ul>
+
+  <p class="spine">
+    Your note that one <span class="mono">unicodelang</span> language of degree 141
+    contributes 9,870 edges on its own is correct arithmetic on a correctly-measured value,
+    and it's the kind of observation that makes a result usable rather than just true.
+  </p>
+</section>
+
+<!-- ══════════════ 3 ══════════════ -->
+<section id="pattern" class="reveal">
+  <div class="sec-head"><span class="sec-num">03</span><h2>The pattern behind most of the corrections</h2></div>
+
+  <p class="lede spine">The errors are not scattered. They sit in one place, and it is a place you can watch for.</p>
+
+  <div class="callout acc">
+    <h3>Exact figures are exact; approximate figures are wrong</h3>
+    <p>
+      Every table where you wrote precise numbers verifies. <strong>Every table where you
+      wrote a "~" range is wrong in at least one cell.</strong> Three tables use tilde ranges,
+      and all three are wrong — in the worst case the range you published contains none of
+      your hundred measurements.
+    </p>
+  </div>
+
+  <div class="lane">
+    <span class="lane-tag">Why this happens, and the habit that stops it</span>
+    <p>
+      The tilde is doing something specific: it marks the moment you needed a number, didn't
+      have it in front of you, and wrote one that looked about right rather than re-opening a
+      finished script. It reads as a rounding, so it doesn't feel like a guess — but a
+      rounding stays near the truth and these don't.
+    </p>
+    <p>
+      The habit worth building: <strong>a tilde in a draft is a to-do, not a value.</strong>
+      If a number isn't computed yet, leave it as <code>TODO</code> so the checker catches
+      it — that's what the placeholder list is for.
+    </p>
+  </div>
+
+  <div class="note">
+    <b>The pack states this as its rule and it is worth re-reading.</b> <em>"Never guess in a
+    deliverable. 'I could not determine this; here is what I checked and why it was
+    inconclusive' is a complete, useful answer. A confident wrong number is not, because
+    somebody will build on it."</em> Nothing here is a telling-off — these are much better
+    caught now than after somebody has built on them.
+  </div>
+</section>
+
+<!-- ══════════════ 4 ══════════════ -->
+<section id="tilde" class="reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Numbers that don't match your CSVs</h2></div>
+
+  <p class="lede spine">Three tables to recompute. The files you need are already in your submission.</p>
+
+  <div class="callout">
+    <h3>Part 3B §2.3 — mean ARI against ground truth</h3>
+    <p>
+      Stated as <strong>"~0.45–0.55"</strong>. Recomputed from your own 100-row
+      <code>ground_truth_scores.csv</code>, it is <strong>0.308 for Louvain and 0.305 for
+      Leiden</strong>. The spread across all 100 runs is 0.217 to 0.371 — <strong>no single
+      run falls inside the published band.</strong>
+    </p>
+  </div>
+
+  <div class="bars" data-bars>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Stated in the memo</b>"~0.45–0.55", no sample size</div>
+      <div class="bar-tr"><div class="bar-fl crit" data-w="50"></div></div>
+      <div class="bar-val">~0.50</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Actual, Louvain</b>mean of 50 runs</div>
+      <div class="bar-tr"><div class="bar-fl ok" data-w="30.8"></div></div>
+      <div class="bar-val">0.308</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Best single run in the file</b>the most favourable row available</div>
+      <div class="bar-tr"><div class="bar-fl ok" data-w="37.1"></div></div>
+      <div class="bar-val">0.371</div>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Where</th><th>Stated</th><th>Your CSV says</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Part 3B §2.3 — mean ARI vs truth</td><td>~0.45–0.55</td><td class="num">0.308 / 0.305</td><td><span class="chip crit">replace</span></td></tr>
+        <tr><td>Part 3B §2.3 — mean NMI vs truth</td><td>~0.55–0.65</td><td class="num">0.577 / 0.573</td><td><span class="chip ok">make exact</span></td></tr>
+        <tr><td>Part 3B §2.3 — community count</td><td>6–9</td><td class="num">6–8</td><td><span class="chip warn">tighten</span></td></tr>
+        <tr><td>Part 4 §2.4 — <span class="mono">crime</span> side 0 ARI</td><td>~0.3–0.4</td><td class="num">0.5688</td><td><span class="chip crit">replace</span></td></tr>
+        <tr><td>Part 4 §2.4 — <span class="mono">crime</span> side 1 ARI</td><td>~0.3–0.4</td><td class="num">0.5751</td><td><span class="chip crit">replace</span></td></tr>
+        <tr><td>Part 4 §2.4 — <span class="mono">unicodelang</span> side 0</td><td>~0.1–0.2</td><td class="num">0.1702</td><td><span class="chip ok">make exact</span></td></tr>
+        <tr><td>Part 4 §2.4 — <span class="mono">unicodelang</span> side 1</td><td>~0.3–0.4</td><td class="num">0.3506</td><td><span class="chip ok">make exact</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <b>Your Part 4 conclusion survives the correction.</b> The argument that the projection
+    choice moves communities more than Louvain's own run-to-run noise still holds — 0.57 is
+    still well below the 0.88 noise floor you measured for <span class="mono">crime</span> in
+    Part 2B. The conclusion was right; the table underneath it wasn't. That combination is
+    the hardest kind to catch later, which is why it's worth fixing now.
+  </div>
+
+  <div class="callout amber">
+    <h3>Part 3A §2.3 — and a finding worth rescuing</h3>
+    <p>
+      The memo says <em>"Top-50 overlap: higher… Spearman: lower (ranking all nodes is
+      harder)"</em>. Spearman is <strong>0.920–0.965 across all 150 runs</strong> — the
+      highest of the three measures, never the lowest.
+    </p>
+    <p>
+      There's a good result underneath that. At a 1% pivot sample, Spearman stays above 0.92
+      while top-10 overlap falls to 0.18. <strong>Spearman looks excellent precisely when the
+      answer is wrong</strong>, which makes it the worst available quality signal for this
+      approximation — and that is a more useful sentence than the one currently in the memo.
+      You have the data to make that claim; it's worth making.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ 5 ══════════════ -->
+<section id="direction" class="reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Three rows where the direction is reversed</h2></div>
+
+  <p class="lede spine">Different from the estimated numbers — here the answer was already in a column of the file.</p>
+
+  <p class="spine">
+    The Part 2A §2.5 table names the five nodes where degree and betweenness disagree most
+    and gives a direction for each. <code>disagreements.csv</code> has a
+    <code>direction</code> column. <strong>Three of the five rows are the other way round.</strong>
+  </p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Graph</th><th>Node</th><th>Betweenness value</th><th>Memo says</th><th>CSV says</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mono">lesmis</span></td><td class="num">60</td><td class="num">0.0</td><td>betweenness higher</td><td><span class="chip crit">degree higher</span></td></tr>
+        <tr><td><span class="mono">unicodelang</span></td><td class="num">8</td><td class="num">0.00300</td><td>betweenness higher</td><td><span class="chip ok">betweenness higher</span></td></tr>
+        <tr><td><span class="mono">crime</span></td><td class="num">1053</td><td class="num">0.0000295</td><td>betweenness higher</td><td><span class="chip crit">degree higher</span></td></tr>
+        <tr><td><span class="mono">email-Eu-core</span></td><td class="num">414</td><td class="num">0.00673</td><td>betweenness higher</td><td><span class="chip ok">betweenness higher</span></td></tr>
+        <tr><td><span class="mono">openflights</span></td><td class="num">815</td><td class="num">0.0</td><td>betweenness higher</td><td><span class="chip crit">degree higher</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <h3>A check that would have caught all three without opening the file</h3>
+    <p>
+      <span class="mono">lesmis</span> node 60 and <span class="mono">openflights</span> node
+      815 both have betweenness of <strong>exactly 0.0</strong>. A node on no shortest path
+      cannot be ranked highly by betweenness. <strong>Reading the sentence back and asking
+      whether it could be true is enough</strong> — the zero is right there in the same row.
+    </p>
+    <p>
+      The <span class="mono">email-Eu-core</span> node 414 commentary is correct and is the
+      good one: low degree, high betweenness, a genuine structural broker. Keep it.
+    </p>
+  </div>
+
+  <p class="spine">Two more in the same memo, both worth a quick edit:</p>
+
+  <ul class="tight spine">
+    <li><strong>§2.1 says <span class="mono">unicodelang</span> degree and PageRank "diverge in ranking".</strong> Their top-10 overlap is <strong>1.00</strong> — perfect agreement — and your own §3.2 says exactly that three paragraphs later. §3.2 is the correct one.</li>
+    <li><strong>§2.4 and §3.3 reach opposite conclusions from the same two graphs.</strong> §2.4: "edge count drives betweenness cost more than node count." §3.3: "betweenness scales closer to V×E than E alone." §3.3 also calls 18,858 edges "fewer" than 16,064. <strong>§3.3's conclusion is right</strong>; §2.4's needs replacing and the edge comparison needs flipping.</li>
+  </ul>
+</section>
+
+<!-- ══════════════ 6 ══════════════ -->
+<section id="baserate" class="reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>The crime bridge finding needs its base rate</h2></div>
+
+  <p class="lede spine">One synthesis claim measures a property of the graph rather than of the algorithm.</p>
+
+  <div class="example">
+    <span class="label">Synthesis claim #13, marked High confidence</span>
+    <em>"Similarity misses bridges: 100% zero Jaccard on crime top-1% edges."</em>
+  </div>
+
+  <div class="lane">
+    <span class="lane-tag">What the 100% is actually measuring</span>
+    <p>
+      <span class="mono">crime</span> is bipartite — every edge joins a person to a crime,
+      never a person to a person. Two nodes that are directly connected sit on opposite sides,
+      so they cannot share a neighbour, so their Jaccard similarity is zero <em>by
+      construction</em>. The 100% isn't telling us similarity misses bridges. It's telling us
+      the graph is bipartite.
+    </p>
+  </div>
+
+  <div class="lane tech">
+    <span class="lane-tag">The comparison that was missing</span>
+    <p>
+      <code>similarity_vs_bridges.csv</code> holds all 1,476 <span class="mono">crime</span>
+      edges. <strong>All 1,476 have Jaccard = 0</strong>, not just the 14 in the top 1% — so
+      the top 1% is not distinguishable from any other slice. You had already identified
+      <span class="mono">crime</span> as bipartite by name in Part 2A §3.1 and used it as the
+      bipartite exemplar in Part 4, so the fact was in hand.
+    </p>
+  </div>
+
+  <div class="bars" data-bars>
+    <div class="bar-row">
+      <div class="bar-lab"><b>crime — top 1% by betweenness</b>14 of 14 edges</div>
+      <div class="bar-tr"><div class="bar-fl sea" data-w="100"></div></div>
+      <div class="bar-val">100%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>crime — all edges</b>1,476 of 1,476 · the base rate</div>
+      <div class="bar-tr"><div class="bar-fl sea" data-w="100"></div></div>
+      <div class="bar-val">100%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>email-Eu-core — top 1%</b>112 of 160 edges</div>
+      <div class="bar-tr"><div class="bar-fl crit" data-w="70"></div></div>
+      <div class="bar-val">70%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>email-Eu-core — all edges</b>288 of 16,064 · the base rate</div>
+      <div class="bar-tr"><div class="bar-fl ok" data-w="1.8"></div></div>
+      <div class="bar-val">1.8%</div>
+    </div>
+  </div>
+
+  <div class="callout good">
+    <h3>The real finding is the one sitting underneath it</h3>
+    <p>
+      On <span class="mono">email-Eu-core</span>, 70% of top-1% bridge edges have zero
+      similarity against a base rate of 1.8% — a <strong>39× enrichment</strong>. That's a
+      strong, genuine result about similarity being blind to bridges, and it's currently
+      being outshouted by a 100% that means nothing.
+    </p>
+    <p>
+      <strong>Drop the <span class="mono">crime</span> row and lead with the
+      <span class="mono">email-Eu-core</span> one</strong>, quoting both figures — the 70% and
+      the 1.8% — in the same sentence. The enrichment is the finding, not the 70% alone.
+    </p>
+  </div>
+
+  <div class="note">
+    <b>The general form is worth keeping.</b> Any time a rate comes out at 100% or 0%, the
+    next question is what that rate is across everything you <em>didn't</em> select. If it's
+    the same, the selection did no work.
+  </div>
+</section>
+
+<!-- ══════════════ 7 ══════════════ -->
+<section id="backwards" class="reveal">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Two claims to retract</h2></div>
+
+  <p class="lede spine">Both concern what drives PageRank cost, and both are stated with High confidence.</p>
+
+  <div class="example">
+    <span class="label">Synthesis claim #1, marked High confidence</span>
+    <em>"Node count does not predict PageRank cost; degree skew and graph shape do."</em>
+  </div>
+
+  <p class="spine">Recomputed from your <code>profiles.csv</code> and <code>pagerank_runs.csv</code>, across all seven graphs:</p>
+
+  <div class="bars" data-bars>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Node count vs compute time</b>Spearman, n=7 graphs</div>
+      <div class="bar-tr"><div class="bar-fl ok" data-w="96.4"></div></div>
+      <div class="bar-val">+0.964</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Edge count vs compute time</b>Spearman, n=7 graphs</div>
+      <div class="bar-tr"><div class="bar-fl acc" data-w="82.1"></div></div>
+      <div class="bar-val">+0.821</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-lab"><b>Degree skew vs compute time</b>Spearman, n=7 graphs</div>
+      <div class="bar-tr"><div class="bar-fl crit" data-w="35.7"></div></div>
+      <div class="bar-val">+0.357</div>
+    </div>
+  </div>
+
+  <p class="spine">
+    Node count is the <em>strongest</em> of the three predictors and degree skew the
+    <em>weakest</em>, so the claim is reversed on both halves.
+  </p>
+
+  <div class="callout">
+    <h3>The same claim in graph_analysis.html, supported by the wrong quantity</h3>
+    <p>
+      Finding 1 there defends it with: <em>"unicodelang (skew=141) needs 67 iterations;
+      email-Eu-core (skew=16.5) needs only 14."</em> That's about <strong>iterations, not
+      cost</strong>. On your own timings <span class="mono">unicodelang</span> runs its 67
+      iterations in 0.0159 s while <span class="mono">email-Eu-core</span> runs 14 in
+      0.0187 s — <strong>the low-skew graph is slower, with 4.8× fewer iterations.</strong>
+    </p>
+  </div>
+
+  <div class="callout good">
+    <h3>There is a defensible version — keep it</h3>
+    <p>
+      Skew does correlate with <em>iteration count</em>, at Spearman +0.500. Your
+      <code>gds-workflow.html</code> wording — <em>"degree skew explains PageRank iterations
+      better than node count"</em> — is the arguable one and is worth keeping, with the +0.500
+      quoted next to it so a reader can see how strong it is. <strong>It's the "cost" wording
+      in the synthesis and in graph_analysis.html that needs to go.</strong>
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ 8 ══════════════ -->
+<section id="reports" class="reveal">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Three changes needed in the HTML reports</h2></div>
+
+  <p class="lede spine">The reports are well-built. Three things in them describe work that hasn't happened yet.</p>
+
+  <div class="note">
+    <b>Worth saying first: the structure of these is good.</b> The phase model, the risk
+    register and the workflow diagrams in <code>planner.html</code> are clearer than a lot of
+    what gets written internally. The changes below are about the gap between what's described
+    and what's been run, not about how they're put together.
+  </div>
+
+  <div class="callout">
+    <h3>The ontology section describes a pipeline that hasn't run</h3>
+    <p>
+      <code>gds-workflow.html</code> gives a full section to RDF/OWL export in the present
+      tense: <em>"Results are exported as Turtle via gds-owl, then validated against SHACL
+      shapes… Only conforming exports are archived."</em> It includes a Biolink class-usage
+      table naming extracted entities — PRKCB, NLRC4, TNFSF10, Atherosclerosis — and a
+      validation-loop diagram.
+    </p>
+    <p>
+      <strong>There's no <code>.ttl</code>, <code>.rdf</code>, export script or SHACL report
+      anywhere in the archive.</strong> The packages are properly installed —
+      <code>gds_owl-0.99.0</code>, <code>rdflib</code>, <code>pyshacl</code>,
+      <code>owlrl</code> in <code>venv-gds-owl</code> — so the environment is ready and
+      nothing has been run through it. As written, a reader would come away believing the
+      capability exists.
+    </p>
+    <p>
+      <strong>Two good options:</strong> export one result set through <code>gds-owl</code>
+      and validate it against the SHACL shapes — genuinely useful, probably half a day, and
+      then the section is true — or relabel it as planned rather than built.
+    </p>
+  </div>
+
+  <div class="callout amber">
+    <h3>The colleague dependency isn't real, and it's covering the wrong thing</h3>
+    <p>
+      Both documents state that <em>"Phase 5 depends on colleague output… If colleague output
+      is delayed, Phase 5 slips — there is no workaround."</em> There's no colleague on this
+      run — <code>planner.html</code>'s own header badge reads "Solo Execution" — and
+      <strong>the claims strand depends on neither a colleague nor any code.</strong> It's
+      twelve published claims checked against their primary sources, and
+      <code>06-claims/BRIEF.md</code> says it needs no code at all.
+    </p>
+    <p>
+      Change those lines to say the strand is <strong>outstanding</strong> rather than
+      <strong>blocked</strong>. "Not done yet" is a fine status; it just needs to be the one
+      on the page.
+    </p>
+  </div>
+
+  <div class="lane tech">
+    <span class="lane-tag">Smaller factual fixes in the same document</span>
+    <p>
+      <strong>"58 of 60 papers fetched successfully. 2 anchor papers (A07, A08) initially
+      failed"</strong> — <code>fetch_log.jsonl</code> records 68 attempts, 62 successes, and
+      <strong>six</strong> anchors that initially failed (A07 through A12), all six later
+      retrieved. The corpus is 62 PDFs, and your own breakdown says so (12 + 50 = 62, not 60).
+      This is the same shape as the base-rate item: the first two failures were read and the
+      rest weren't totalled.
+    </p>
+    <p>
+      <strong>"95–104× speedup"</strong> at 1% sampling — the measured range is
+      <strong>86.8–104.5×</strong>. Quote the floor as measured.
+    </p>
+    <p>
+      <strong>The two reports disagree about 1% sampling.</strong>
+      <code>graph_analysis.html</code> sells it as a headline win on its Spearman score;
+      your Part 3A memo says <em>"1% sample is useless"</em>. The memo is right — see §04.
+    </p>
+    <p>
+      <strong>"Every number traces to a CSV row"</strong> and <strong>"All checkers
+      pass"</strong> — the first needs the corrections in this note before it's true, and the
+      second is worth qualifying, since <code>check_claims.py</code> reports
+      <em>0 of 12 claims attempted</em>.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ 9 ══════════════ -->
+<section id="spine" class="reveal">
+  <div class="sec-head"><span class="sec-num">09</span><h2>The claims strand and the log</h2></div>
+
+  <p class="lede spine">Five deliverables came back on the blank template. Four can still be done; one can't.</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Deliverable</th><th>State</th><th>Still possible?</th></tr></thead>
+      <tbody>
+        <tr><td><code>claims.jsonl</code></td><td>unchanged from the seed — 0 of 12 attempted</td><td><span class="chip ok">yes</span></td></tr>
+        <tr><td><code>part1-memo.md</code></td><td>blank template</td><td><span class="chip ok">yes — data is all there</span></td></tr>
+        <tr><td><code>claims-memo.md</code></td><td>blank template</td><td><span class="chip ok">yes, after the claims</span></td></tr>
+        <tr><td><code>research-log.md</code></td><td>blank template</td><td><span class="chip warn">partly</span></td></tr>
+        <tr><td><code>questions.md</code></td><td>blank template</td><td><span class="chip warn">partly</span></td></tr>
+        <tr><td><code>first-impressions.md</code></td><td>headings and a date, bullets empty</td><td><span class="chip crit">no</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <h3>first-impressions.md is the one that can't be recovered</h3>
+    <p>
+      <code>START_HERE.md</code> §4 is explicit about why: <em>"Once you understand this
+      material you will not be able to remember what was opaque about it; the knowledge
+      overwrites the memory of not having it. Nobody who already knows this subject can tell
+      us where the explanations fail."</em> Four parts in, that's now true of you too.
+    </p>
+    <p>
+      <strong>If any first-week notes survive anywhere</strong> — messages, a scratch file,
+      annotations in a PDF — they're worth salvaging into it even in rough form. Anything at
+      all beats nothing here, because there's no other source for it.
+    </p>
+  </div>
+
+  <div class="lane">
+    <span class="lane-tag">Why the log is worth more than it looks</span>
+    <p>
+      Three lines a session isn't paperwork — it's the cheapest defence against exactly the
+      corrections in this note. An entry reading "computed mean ARI vs truth = 0.31, lower
+      than I expected" makes it very hard to later write "~0.45–0.55" in a memo, because
+      you'd have to disagree with yourself in writing to do it.
+    </p>
+  </div>
+
+  <div class="lane tech">
+    <span class="lane-tag">One traceability gap in the data itself</span>
+    <p>
+      <code>calibration.md</code> quotes ratios of 1.92×, 4.59× and 16.6×. The shipped
+      <code>pagerank_runs.csv</code> yields 1.90 / 4.51 / 16.12 under mean and
+      1.95 / 4.50 / 16.17 under median — nothing reproduces your three figures. That fits
+      <code>replication.md</code>, which reports a second 70-run invocation, so
+      <strong>70 of the 140 runs it cites aren't in the submission</strong>. Either re-export
+      those rows or quote the ratios from the CSV that shipped.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════ 10 ══════════════ -->
+<section id="packbug" class="reveal">
+  <div class="sec-head"><span class="sec-num">10</span><h2>One of these is our fault, not yours</h2></div>
+
+  <p class="lede spine">The Part 1 checker passes a Part 1 memo that is one hundred percent unwritten template.</p>
+
+  <div class="lane">
+    <span class="lane-tag">What this means for the feedback above</span>
+    <p>
+      You ran <code>check_part1.py</code>, it printed PASS, and you moved on. That was a
+      reasonable thing to do — the checker's own docstring promises it verifies "your memo has
+      its sections and no leftover placeholders", and against the templates we ship it can do
+      neither. <strong>Part of §09 is a defect in the pack rather than something you
+      missed.</strong>
+    </p>
+  </div>
+
+  <div class="lane tech">
+    <span class="lane-tag">Two independent holes, both in gdslab/check.py</span>
+    <p>
+      <strong>1. The placeholder list doesn't match our own placeholders.</strong>
+      <code>check.py:24</code> reads
+      <code>PLACEHOLDERS = ("TODO", "TBD", "FIXME", "XXX", "&lt;fill in&gt;", "lorem ipsum")</code>.
+      The templates ship <code>&lt;your name&gt;</code>,
+      <code>&lt;the question you were answering&gt;</code> and
+      <code>&lt;start&gt; to &lt;end&gt;</code>. None of them match, so
+      <code>require_no_placeholders</code> is blind to the exact strings we put in the files.
+    </p>
+    <p>
+      <strong>2. The sample-size check is satisfied by the template's own instructions.</strong>
+      <code>require_a_sample_size</code> looks for patterns like <code>\b\d+\s+runs?\b</code>
+      and <code>sample size</code>. The blank template already contains the illustrative
+      sentence <em>"Across 50 runs on 5 graphs, 3.2% of communities were internally
+      disconnected"</em> and the heading <em>"Sample sizes and caveats"</em> — so
+      <strong>the template satisfies the check just by existing.</strong>
+    </p>
+    <p>
+      <code>require_sections</code> passes by construction, since a template is defined by
+      having the headings. <code>first-impressions.md</code> and <code>research-log.md</code>
+      are tested for existence only, never for content.
+    </p>
+  </div>
+
+  <div class="callout good">
+    <h3>The checker isn't broken in general — this was tested before being believed</h3>
+    <p>
+      Two deliberate failure cases were run against it first. Appending <code>TODO</code>
+      produces <em>"still contains placeholder text: ['TODO']"</em>; removing one heading
+      produces <em>"missing required section(s): ['What surprised me']"</em>. The machinery
+      works — it just can't see our own templates.
+    </p>
+    <p>
+      <strong>This is the habit §01 mentions, applied to someone else's tool:</strong> before
+      trusting a green light, give the thing a case it ought to fail, and check that it does.
+      A checker that has never been seen to fail isn't evidence of anything yet.
+    </p>
+  </div>
+
+  <div class="note">
+    <b>This is exactly the kind of thing the pack asks for.</b> <code>START_HERE.md</code> §5:
+    <em>"If you think something here is wrong… that is a finding, and we want it. Finding
+    errors in this pack is genuinely welcome; several exist that we do not know about yet."</em>
+    This was one of them. If you hit others in the correction pass, they belong in
+    <code>questions.md</code> under "Things in this pack I think are wrong".
+  </div>
+</section>
+
+<!-- ══════════════ 11 ══════════════ -->
+<section id="next" class="reveal">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Your next pass</h2></div>
+
+  <p class="lede spine">The data all keeps. Nothing here needs re-running — it needs recomputing and rewording.</p>
+
+  <div class="phases">
+    <div class="phase next">
+      <div class="ph-id">1</div>
+      <div class="ph-body"><h3>Fill <code>claims.jsonl</code> <span class="chip crit">largest gap</span></h3>
+        <p>Twelve claims against primary sources. No code, no colleague, no dependency on
+        anything else. Your own Louvain measurement speaks directly to C01, so you're better
+        placed on that one than most people would be — you have a number to compare the source
+        against. Then <code>claims-memo.md</code> follows from it.</p></div>
+      <div class="ph-meta">0 of 12</div>
+    </div>
+    <div class="phase next">
+      <div class="ph-id">2</div>
+      <div class="ph-body"><h3>Recompute the seven figures</h3>
+        <p>Three tilde tables (§04), three reversed direction rows (§05), and the Spearman
+        claim in Part 3A §2.3. Each is one line against a file you already have. While you're
+        in Part 3A, the "Spearman looks best when the answer is worst" result is worth writing
+        up properly.</p></div>
+      <div class="ph-meta">~1 hour</div>
+    </div>
+    <div class="phase next">
+      <div class="ph-id">3</div>
+      <div class="ph-body"><h3>Retract two claims, promote one</h3>
+        <p>Synthesis #1 and <code>graph_analysis.html</code> Finding 1 on PageRank cost, both
+        replaced by the iterations version with +0.500 quoted. Replace #13 with the
+        <span class="mono">email-Eu-core</span> 70%-against-1.8% result.</p></div>
+      <div class="ph-meta">3 claims</div>
+    </div>
+    <div class="phase next">
+      <div class="ph-id">4</div>
+      <div class="ph-body"><h3>Write <code>part1-memo.md</code></h3>
+        <p>The measurements are all done and <code>calibration.md</code> already contains the
+        thinking. This is mostly transcription, plus the ratio question from §09.</p></div>
+      <div class="ph-meta">data ready</div>
+    </div>
+    <div class="phase block">
+      <div class="ph-id">5</div>
+      <div class="ph-body"><h3>Ontology section: run it once, or mark it planned</h3>
+        <p>One result set exported through <code>gds-owl</code> and validated against the
+        SHACL shapes would make the section true and is a genuinely useful piece of work. If
+        that's not where you want the time to go, relabel it.</p></div>
+      <div class="ph-meta">blocks sharing</div>
+    </div>
+    <div class="phase block">
+      <div class="ph-id">6</div>
+      <div class="ph-body"><h3>Fix the colleague dependency lines</h3>
+        <p>Both documents. "Outstanding", not "blocked".</p></div>
+      <div class="ph-meta">2 edits</div>
+    </div>
+    <div class="phase">
+      <div class="ph-id">7</div>
+      <div class="ph-body"><h3>Repackage <span class="chip idle">hygiene</span></h3>
+        <p>The archive is 382 MB and carries two virtualenvs, <code>__MACOSX</code>,
+        <code>.DS_Store</code>, <code>__pycache__</code>, <code>.pytest_cache</code> and the
+        865 MB <code>chebi.owl</code>. The actual work product is about 2 MB. A
+        <code>.gitignore</code>-style exclude list when you zip will do it.</p></div>
+      <div class="ph-meta">2 MB of 382 MB</div>
+    </div>
+  </div>
+
+  <div class="callout acc">
+    <h3>The one thing to carry forward</h3>
+    <p>
+      Almost everything in this note comes back to a single point: <strong>when you don't have
+      the number, get it rather than write a plausible one.</strong> Every correction above
+      sits in a file you generated yourself, usually in a column you'd already printed. The
+      measurement work that produced those files is sound — Part 2B and Part 3A hold up
+      completely, and your Louvain result independently matches ours. The gap is only between
+      the files and the sentences describing them, and that's a habit rather than a skill.
+    </p>
+  </div>
+
+  <div class="note">
+    <b>If any of these corrections is itself wrong, say so.</b> They were recomputed from your
+    CSVs in one pass, and a recompute can be wrong the same way a memo can. Push back with the
+    row that disagrees and we'll settle it against the file.
+  </div>
+</section>
+
+
+</div>
+
+<script>
+
+  // The diagrams are inlined SVG painted with the page's own CSS custom properties,
+  // so switching theme re-colours them with no re-render and no network.
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const root = document.documentElement;
+    const now = root.dataset.theme
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.dataset.theme = now === 'dark' ? 'light' : 'dark';
+  });
+</script>
+<script>
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('shown'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(n => io.observe(n));
+
+  // Animate bars when they scroll into view
+  const bio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.querySelectorAll('.bar-fl').forEach((b, i) => {
+        setTimeout(() => { b.style.width = b.dataset.w + '%'; }, i * 140);
+      });
+      bio.unobserve(e.target);
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('[data-bars]').forEach(n => bio.observe(n));
+</script>
+</body>
+</html>

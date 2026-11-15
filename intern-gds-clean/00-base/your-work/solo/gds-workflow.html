@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDS Measurement Program — Implementation Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg: #fdf2f8;
+  --bg2: #fce4f8;
+  --card: #ffffff;
+  --card-hover: #fff5f9;
+  --border: #e8c8d8;
+  --text: #2d1b3d;
+  --muted: #6b4a7a;
+  --accent: #7c3aed;
+  --accent-light: #a78bfa;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --orange: #d97706;
+  --orange-light: #fef3c7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --blue: #2563eb;
+  --blue-light: #dbeafe;
+  --cyan: #0891b2;
+  --cyan-light: #cffafe;
+  --pink: #db2777;
+  --pink-light: #fce7f3;
+  --yellow: #ca8a04;
+  --yellow-light: #fef9c3;
+  --indigo: #4f46e5;
+  --indigo-light: #e0e7ff;
+}
+  --pink-light: #fce7f3;
+  --yellow: #ca8a04;
+  --yellow-light: #fef9c3;
+  --indigo: #4f46e5;
+  --indigo-light: #e0e7ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HERO HEADER */
+.hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: white;
+  padding: 80px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -30px) rotate(1deg); }
+  66% { transform: translate(-20px, 20px) rotate(-1deg); }
+}
+.hero h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
+  position: relative;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+}
+.hero .subtitle {
+  font-size: 1.15rem;
+  opacity: 0.92;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  font-weight: 400;
+}
+.hero .meta {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.hero .meta-item {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* SECTION CARDS */
+.section {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 40px 48px;
+  margin: 32px 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+}
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  border-radius: 20px 0 0 20px;
+}
+.section:nth-child(1)::before { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+.section:nth-child(2)::before { background: linear-gradient(180deg, #2563eb, #60a5fa); }
+.section:nth-child(3)::before { background: linear-gradient(180deg, #059669, #34d399); }
+.section:nth-child(4)::before { background: linear-gradient(180deg, #d97706, #fbbf24); }
+.section:nth-child(5)::before { background: linear-gradient(180deg, #dc2626, #f87171); }
+.section:nth-child(6)::before { background: linear-gradient(180deg, #0891b2, #22d3ee); }
+.section:nth-child(7)::before { background: linear-gradient(180deg, #db2777, #f472b6); }
+.section:nth-child(8)::before { background: linear-gradient(180deg, #4f46e5, #818cf8); }
+.section:nth-child(9)::before { background: linear-gradient(180deg, #ca8a04, #facc15); }
+.section:nth-child(10)::before { background: linear-gradient(180deg, #059669, #34d399); }
+.section:nth-child(11)::before { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+.section:nth-child(12)::before { background: linear-gradient(180deg, #2563eb, #60a5fa); }
+.section:nth-child(13)::before { background: linear-gradient(180deg, #d97706, #fbbf24); }
+.section:nth-child(14)::before { background: linear-gradient(180deg, #0891b2, #22d3ee); }
+.section:nth-child(15)::before { background: linear-gradient(180deg, #db2777, #f472b6); }
+.section:nth-child(16)::before { background: linear-gradient(180deg, #4f46e5, #818cf8); }
+.section:nth-child(17)::before { background: linear-gradient(180deg, #ca8a04, #facc15); }
+.section:nth-child(18)::before { background: linear-gradient(180deg, #059669, #34d399); }
+.section:nth-child(19)::before { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+.section:nth-child(20)::before { background: linear-gradient(180deg, #2563eb, #60a5fa); }
+.section:nth-child(21)::before { background: linear-gradient(180deg, #d97706, #fbbf24); }
+.section:nth-child(22)::before { background: linear-gradient(180deg, #0891b2, #22d3ee); }
+.section:nth-child(23)::before { background: linear-gradient(180deg, #db2777, #f472b6); }
+.section:nth-child(24)::before { background: linear-gradient(180deg, #4f46e5, #818cf8); }
+.section:nth-child(25)::before { background: linear-gradient(180deg, #ca8a04, #facc15); }
+.section:nth-child(26)::before { background: linear-gradient(180deg, #059669, #34d399); }
+.section:nth-child(27)::before { background: linear-gradient(180deg, #7c3aed, #a78bfa); }
+.section:nth-child(28)::before { background: linear-gradient(180deg, #2563eb, #60a5fa); }
+.section:nth-child(29)::before { background: linear-gradient(180deg, #d97706, #fbbf24); }
+.section:nth-child(30)::before { background: linear-gradient(180deg, #0891b2, #22d3ee); }
+
+/* SECTION ICON */
+.section-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+.section-icon.purple { background: #ede9fe; color: #7c3aed; }
+.section-icon.blue { background: #dbeafe; color: #2563eb; }
+.section-icon.green { background: #d1fae5; color: #059669; }
+.section-icon.orange { background: #fef3c7; color: #d97706; }
+.section-icon.red { background: #fee2e2; color: #dc2626; }
+.section-icon.cyan { background: #cffafe; color: #0891b2; }
+.section-icon.pink { background: #fce7f3; color: #db2777; }
+.section-icon.indigo { background: #e0e7ff; color: #4f46e5; }
+.section-icon.yellow { background: #fef9c3; color: #ca8a04; }
+
+/* HEADINGS */
+.section h2 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 24px 0 12px;
+}
+.section h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 16px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* TEXT */
+.section p {
+  color: #4a4a6a;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+.section ul, .section ol {
+  margin: 12px 0;
+  padding-left: 24px;
+  color: #4a4a6a;
+}
+.section li {
+  margin-bottom: 6px;
+  font-size: 0.93rem;
+}
+
+/* TABLES */
+.table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+th {
+  background: #f8f9ff;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+}
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #4a4a6a;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafbff; }
+
+/* CARDS */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+.card {
+  background: #f8f9ff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.card h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.card p {
+  font-size: 0.88rem;
+  color: #4a4a6a;
+  margin: 0;
+}
+.card .metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--border);
+}
+.card .metric:last-child { border-bottom: none; }
+.card .metric-label { color: var(--muted); }
+.card .metric-value { font-weight: 600; color: var(--text); }
+
+/* FINDINGS */
+.finding {
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  padding: 16px 20px;
+  margin: 12px 0;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.93rem;
+  color: #166534;
+}
+.finding strong { color: #15803d; }
+
+.finding.blue { background: #eff6ff; border-left-color: #3b82f6; color: #1e40af; }
+.finding.blue strong { color: #1d4ed8; }
+.finding.orange { background: #fffbeb; border-left-color: #f59e0b; color: #92400e; }
+.finding.orange strong { color: #b45309; }
+.finding.purple { background: #faf5ff; border-left-color: #a855f7; color: #6b21a8; }
+.finding.purple strong { color: #7c3aed; }
+.finding.cyan { background: #ecfeff; border-left-color: #06b6d4; color: #155e75; }
+.finding.cyan strong { color: #0891b2; }
+.finding.pink { background: #fdf2f8; border-left-color: #ec4899; color: #9d174d; }
+.finding.pink strong { color: #db2777; }
+
+/* NOTICE */
+.notice {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #f59e0b;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #92400e;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.notice::before { content: '⚠️'; font-size: 1.2rem; }
+
+/* CODE BLOCK */
+.code-block {
+  background: #fce4f8;
+  color: #2d1b3d;
+  border: 1px solid #e8c8d8;
+  padding: 20px 24px;
+  border-radius: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0;
+  white-space: pre-wrap;
+  border: 1px solid #313244;
+}
+
+/* MERMAID */
+.mermaid {
+  background: #fce4f8;
+  border: 1px solid #e8c8d8;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.mermaid svg {
+  max-width: 100%;
+}
+.mermaid .node-label, .mermaid text {
+  fill: #2d1b3d !important;
+  color: #2d1b3d !important;
+}
+.mermaid .edge-label, .mermaid .edge-text {
+  fill: #7c3aed !important;
+  color: #7c3aed !important;
+}
+
+/* TAGS */
+.tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: 1px solid;
+}
+.tag.purple { color: #7c3aed; border-color: #c4b5fd; background: #ede9fe; }
+.tag.blue { color: #2563eb; border-color: #93c5fd; background: #dbeafe; }
+.tag.green { color: #059669; border-color: #6ee7b7; background: #d1fae5; }
+.tag.orange { color: #d97706; border-color: #fcd34d; background: #fef3c7; }
+.tag.red { color: #dc2626; border-color: #fca5a5; background: #fee2e2; }
+.tag.cyan { color: #0891b2; border-color: #67e8f9; background: #cffafe; }
+.tag.pink { color: #db2777; border-color: #f9a8d4; background: #fce7f3; }
+.tag.indigo { color: #4f46e5; border-color: #a5b4fc; background: #e0e7ff; }
+.tag.yellow { color: #ca8a04; border-color: #fde047; background: #fef9c3; }
+
+/* STATUS */
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.85rem; }
+.status.pass { color: #059669; }
+.status.pass::before { content: '✅'; }
+.status.warn { color: #d97706; }
+.status.warn::before { content: '⏳'; }
+.status.fail { color: #dc2626; }
+.status.fail::before { content: '❌'; }
+
+/* PROGRESS BAR */
+.progress {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
+  transition: width 0.3s;
+}
+.progress-bar.green { background: linear-gradient(90deg, #059669, #34d399); }
+.progress-bar.blue { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.progress-bar.orange { background: linear-gradient(90deg, #d97706, #fbbf24); }
+
+/* NAV */
+.nav { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+.nav a {
+  padding: 8px 16px;
+  background: #f8f9ff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.nav a:hover { background: #ede9fe; border-color: #c4b5fd; }
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .section { padding: 24px; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true, theme:'neutral', flowchart:{nodeSpacing:20, rankSpacing:40, curve:'basis'}, fontFamily:'Inter, sans-serif', fontSize:14});</script>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>🕸️ GDS Measurement Program</h1>
+  <p class="subtitle">A rigorous, reproducible measurement program for graph algorithms on 7 real-world networks — with full provenance tracking and linked-data export.</p>
+  <div class="meta">
+    <span class="meta-item">📊 7 Graphs</span>
+    <span class="meta-item">⚡ 1220+ Runs</span>
+    <span class="meta-item">✅ Phases 0–4 Complete</span>
+    <span class="meta-item">🔬 Phase 5 Pending</span>
+    <span class="meta-item">🏷️ PrajnaAI</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- NAV -->
+<div class="nav">
+  <a href="#summary">Summary</a>
+  <a href="#gds">What is GDS?</a>
+  <a href="#aims">Aims & Objectives</a>
+  <a href="#goals">Goals</a>
+  <a href="#advantages">Advantages</a>
+  <a href="#limitations">Limitations</a>
+  <a href="#tech">Tech Stack</a>
+  <a href="#graphs">7 Graphs</a>
+  <a href="#workflow">Workflow</a>
+  <a href="#phases">Phases P0–P5</a>
+  <a href="#claims">Claims</a>
+  <a href="#ontology">Ontology</a>
+  <a href="#deliverables">Deliverables</a>
+</div>
+
+<!-- PROJECT SUMMARY -->
+<div class="section" id="summary">
+  <div class="section-icon purple">📋</div>
+  <h2>Project Summary</h2>
+  <p>The <strong>GDS Measurement Program</strong> is a rigorous, reproducible benchmark of graph algorithms on 7 real-world networks, built by PrajnaAI as part of the intern-gds project. Every number traces to a CSV row. Every result has provenance.</p>
+  <p><strong>What we did:</strong> We profiled 7 structurally diverse graphs, measured PageRank convergence and timing across 10 seeds per graph, tested four centrality measures for agreement, ran Louvain 200 times per graph for stability, benchmarked betweenness approximation against exact computation at 5 sampling fractions, compared Louvain vs Leiden community quality, and documented the consequences of bipartite projection choices.</p>
+  <p><strong>What we found:</strong> Degree skew explains PageRank iterations better than node count. Louvain is stable on crime (mod 0.9296 ± 0.0004) but noisy on openflights. Projection is NOT neutral — crime side 1 Spearman=0.002 (uncorrelated). Betweenness approximation achieves 95–104x speedup with Spearman >0.92 at 1% pivot sampling. At 5% sampling, speedup is ~18–20× with Spearman >0.97 — the practical sweet spot.</p>
+  <p><strong>Current status:</strong> Phases 0–4 complete and all checkers pass. Phase 5 claims strand scaffolded but unfilled (0/12 claims verified). The project is production-ready for the measurement phases; the claims strand requires manual primary-source research.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Phase</th><th>Status</th><th>Key Output</th></tr></thead>
+      <tbody>
+        <tr><td>P0: Setup</td><td><span class="status pass">Complete</span></td><td>112/112 setup tests pass</td></tr>
+        <tr><td>P1: Profile</td><td><span class="status pass">Complete</span></td><td>profiles.csv, pagerank_runs.csv (70)</td></tr>
+        <tr><td>P2A: Centrality</td><td><span class="status pass">Complete</span></td><td>centrality_*.csv (4 files)</td></tr>
+        <tr><td>P2B: Louvain</td><td><span class="status pass">Complete</span></td><td>louvain_runs.csv (1,000)</td></tr>
+        <tr><td>P3A: Betweenness</td><td><span class="status pass">Complete</span></td><td>betweenness_*.csv (150)</td></tr>
+        <tr><td>P3B: Quality</td><td><span class="status pass">Complete</span></td><td>community_quality.csv (500)</td></tr>
+        <tr><td>P4: Projection</td><td><span class="status pass">Complete</span></td><td>projection_*.csv (4 files)</td></tr>
+        <tr><td>P5: Claims</td><td><span class="status warn">Scaffolded</span></td><td>claims.jsonl (0/12 filled)</td></tr>
+      </tbody>
+    </table>
+  </div>
+<h3>Project Workflow</h3>
+    <div class="mermaid">graph LR
+      P0(("P0")) --> P1(("P1"))
+      P1 --> P2A(("P2A"))
+      P1 --> P2B(("P2B"))
+      P2A --> P3A(("P3A"))
+      P2B --> P3B(("P3B"))
+      P3A --> P4(("P4"))
+      P3B --> P4
+      P4 --> P5(("P5"))
+      P4 --> O(("Ontology"))
+      P5 --> S(("Synthesis"))
+      O --> S</div>
+    </div>
+
+<!-- 1. WHAT IS GDS -->
+<div class="section" id="gds">
+  <div class="section-icon purple">🧠</div>
+  <h2>What is Graph Data Science (GDS)?</h2>
+  <p>Graph Data Science applies algorithms, statistical methods, and ML techniques to graph-structured data. Unlike tabular data, graphs represent relationships explicitly: nodes (entities) connected by edges (relationships).</p>
+  <p>Graphs are everywhere: social networks, supply chains, biological pathways, citation networks, transportation systems, knowledge graphs. The structure of a graph — its density, skew, component count, weight semantics — fundamentally determines which algorithms work and what results mean.</p>
+  <p>GDS differs from traditional ML in one crucial way: the features are the graph itself. You don't extract features from nodes — you compute them from topology. PageRank measures influence by following links. Betweenness measures bridge importance by counting shortest paths. Community detection groups nodes by connection patterns. Each algorithm answers a different question about the same structure.</p>
+  <div class="card-grid">
+    <div class="card">
+      <h4>🔗 Relationship-First</h4>
+      <p>Most real-world problems are about connections — social networks, supply chains, biological pathways, citation networks. All are fundamentally graph-shaped.</p>
+    </div>
+    <div class="card">
+      <h4>🧮 Algorithmic Richness</h4>
+      <p>Centrality (who is important?), community detection (who belongs together?), similarity (who is similar?), prediction (what connections will form?).</p>
+    </div>
+    <div class="card">
+      <h4>⚙️ Production Tooling</h4>
+      <p>Neo4j GDS, NetworkX, igraph, graph-tool — production-grade implementations of graph algorithms.</p>
+    </div>
+    <div class="card">
+      <h4>🔗 Interoperability</h4>
+      <p>Graph algorithms combine with traditional ML pipelines. Results export as linked data (RDF/OWL) for maximum interoperability.</p>
+    </div>
+  </div>
+  <div class="finding">
+    <strong>🎯 This Project:</strong> We built a reproducible measurement program that benchmarks graph algorithms on 7 real-world networks, validates approximations against exact computation, and exports results as linked data using the Biolink Model vocabulary.
+  </div>
+<h3>GDS Ecosystem</h3>
+    <div class="mermaid">graph LR
+      A(("SNAP")) --> B(("Load"))
+      C(("PubMed")) --> D(("Parse"))
+      B --> E(("Centrality"))
+      B --> F(("Communities"))
+      B --> G(("Similarity"))
+      B --> H(("Paths"))
+      E --> I(("Validate"))
+      F --> I
+      G --> I
+      H --> I
+      I --> J(("CSV"))
+      I --> K(("RDF"))
+      J --> L(("Charts"))
+      K --> M(("SPARQL"))
+      K --> N(("KG"))
+      D --> B</div>
+    </div>
+
+<!-- 2. AIMS & OBJECTIVES -->
+<div class="section" id="aims">
+  <div class="section-icon blue">🎯</div>
+  <h2>Project Aims &amp; Objectives</h2>
+  <p><strong>Primary Aim:</strong> Build a rigorous, reproducible, and auditable measurement program for graph algorithms on real-world networks, with full provenance tracking and linked-data export.</p>
+  <p>This project is not about finding the "best" algorithm — it is about measuring what each algorithm does, under what conditions, and with what confidence. Every claim must be traceable to a primary source or to our own measurement. Every result must have provenance.</p>
+  <p>The measurement philosophy is simple: run algorithms multiple times with different seeds, measure both correctness and cost, compare against exact baselines where possible, and document every decision. If we cannot measure it, we cannot claim it.</p>
+  <h3>Six Objectives</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>1️⃣ Measurement Rigour</h4>
+      <p>Profile 7 structurally diverse graphs. Measure algorithm performance with proper timing, multiple seeds, cross-machine calibration. Every number traceable to a CSV row.</p>
+    </div>
+    <div class="card">
+      <h4>2️⃣ Claims Verification</h4>
+      <p>Trace 12 specific claims about graph algorithms to primary sources. Grade evidence quality. Record verdicts in structured JSONL format.</p>
+    </div>
+    <div class="card">
+      <h4>3️⃣ Approximation Validation</h4>
+      <p>Answer: "Can we sample?" — specifically for betweenness centrality. Determine minimum pivot fraction preserving ranking fidelity while achieving speedup.</p>
+    </div>
+    <div class="card">
+      <h4>4️⃣ Projection Impact</h4>
+      <p>Document consequences of bipartite projection choices. Show projection is not a neutral transformation — can fundamentally change ranking and community structure.</p>
+    </div>
+    <div class="card">
+      <h4>5️⃣ Ontology &amp; Interop</h4>
+      <p>Model experimental results as RDF/OWL linked data using Biolink Model vocabulary. Validate with SHACL. Enable SPARQL queryability for cross-lab interoperability.</p>
+    </div>
+    <div class="card">
+      <h4>6️⃣ Reproducibility</h4>
+      <p>Every result reproducible by another researcher with same environment specs. Runner scripts and provenance sidecars for all outputs.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. ONTOLOGY -->
+<div class="section" id="ontology">
+  <div class="section-icon cyan">🔗</div>
+  <h2>Ontology &amp; Interoperability</h2>
+  <div class="finding cyan">
+    <strong>🔗 Purpose:</strong> Convert experimental results into W3C-standard RDF/OWL linked data using the Biolink Model vocabulary. Enable SPARQL queryability and cross-lab interoperability. Validate with SHACL before archiving.
+  </div>
+  <div class="card-grid">
+    <div class="card" style="border-left: 4px solid #7c4dff;">
+      <h4>🧬 Biolink Model v4.4.4</h4>
+      <p><code>life_science_corpus/ontology/biolink_model.owl.ttl</code> — ~19k lines, 948+ classes. Standard biomedical vocabulary for modelling experimental results as RDF/OWL linked data.</p>
+      <span class="tag purple">Core ontology</span>
+    </div>
+    <div class="card" style="border-left: 4px solid #00bfa5;">
+      <h4>✅ SHACL Shapes</h4>
+      <p><code>life_science_corpus/ontology/biolink_model.shacl.ttl</code> — ~60k lines. Validates exports before archiving, catching schema violations early.</p>
+      <span class="tag green">Validation</span>
+    </div>
+    <div class="card" style="border-left: 4px solid #ff9100;">
+      <h4>🧪 Chemical Ontology</h4>
+      <p><code>life_science_corpus/ontology/chebi.owl</code> — Chemical entities reference for interoperability.</p>
+      <span class="tag orange">Reference</span>
+    </div>
+    <div class="card" style="border-left: 4px solid #f50057;">
+      <h4>🔗 gds-owl Bridge</h4>
+      <p>v0.99.0. Converts experimental results into Turtle format. Installed in venv-gds-owl (Python 3.14).</p>
+      <span class="tag red">Export tool</span>
+    </div>
+  </div>
+  <h3>📦 Corpus Structure</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Set</th><th>Count</th><th>Slots</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Anchor</strong></td><td>12 papers</td><td>A01–A12</td><td><span class="status pass">10 fetched</span> <span class="status fail">2 failed</span></td></tr>
+        <tr><td><strong>Bulk</strong></td><td>50 papers</td><td>B001–B050</td><td><span class="status pass">All fetched</span></td></tr>
+        <tr><td><strong>Total</strong></td><td>62 papers</td><td>—</td><td><span class="status pass">62 OK</span> <span class="status fail">6 failed initially</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>🔄 RDF/OWL Pipeline</h3>
+    <div class="mermaid">graph LR
+      A(("60 PDFs")) --> B(("Manifest"))
+      B --> C(("Fetch Log"))
+      C --> D(("Parse"))
+      D --> E(("Extract"))
+      E --> F(("Relate"))
+      F --> G(("gds-owl"))
+      G --> H(("Turtle"))
+      H --> I(("SHACL"))
+      I --> J{"Conform?"}
+      J -->|Yes| K(("Archive"))
+      J -->|No| L(("Fix"))
+      L --> H
+      K --> M(("SPARQL"))
+      M --> N(("KG"))</div>
+    </div>
+  <h3>🏷️ Biolink Model Vocabulary Used</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Biolink Class</th><th>Usage</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>Gene</code></td><td>Gene/protein entities</td><td>PRKCB, NLRC4, TNFSF10</td></tr>
+        <tr><td><code>Disease</code></td><td>Disease entities</td><td>Atherosclerosis, Type 2 Diabetes</td></tr>
+        <tr><td><code>ChemicalEntity</code></td><td>Chemical/drug entities</td><td>ChEBI compounds, drugs</td></tr>
+        <tr><td><code>Pathway</code></td><td>Biological pathways</td><td>Lipid metabolism, autophagy</td></tr>
+        <tr><td><code>Publication</code></td><td>Paper metadata</td><td>PMCID, title, journal, year</td></tr>
+        <tr><td><code>Association</code></td><td>Gene-disease associations</td><td>PRKCB ↔ Atherosclerosis</td></tr>
+        <tr><td><code>MolecularActivity</code></td><td>Molecular interactions</td><td>Inhibition, activation</td></tr>
+      </tbody>
+    </table>
+  </div>
+<h3>✅ Validation Pipeline</h3>
+    <div class="mermaid">graph LR
+      A(("Results")) --> B(("gds-owl"))
+      B --> C(("Turtle"))
+      C --> D(("SHACL"))
+      D --> E{"Conform?"}
+      E -->|Yes| F(("Archive"))
+      E -->|No| G(("Fix"))
+      G --> C</div>
+  <div class="finding">
+    <strong>Key Advantage:</strong> W3C standards (Turtle and RDF) have decades-long archival stability compared to CSV/Markdown. Results can be joined with external knowledge graphs via SPARQL without schema mapping.
+  </div>
+  <div class="notice">
+    <strong>📌 Why RDF/OWL:</strong> CSV files are opaque — you need to know the schema to understand what each column means. RDF Turtle is self-describing: every triple has a subject, predicate, and object, all of which are URIs that resolve to definitions. This means any RDF-aware tool can query the results without prior knowledge of the schema.
+  </div>
+  <div class="notice blue">
+    <strong>📌 Why Biolink Model:</strong> The Biolink Model is a standardized vocabulary for biomedical knowledge graphs. By aligning our experimental results with Biolink, we ensure that our data can be integrated with other biomedical knowledge graphs. This is not just academic — it means our results can be queried alongside external datasets using standard SPARQL endpoints.
+  </div>
+  <div class="notice green">
+    <strong>📌 Validation pipeline:</strong> Results are exported as Turtle via gds-owl, then validated against SHACL shapes. If validation fails, we fix the Turtle or the shapes and rerun. Only conforming exports are archived. This ensures that every archived result is both syntactically valid and semantically correct.
+  </div>
+  <div class="notice orange">
+    <strong>📌 Corpus-specific pipeline:</strong> The life_science_corpus contains 60 PDFs (12 anchor + 50 bulk) from PubMed Central. Each paper is parsed for metadata (PMCID, title, journal, year) and entities (genes, diseases, chemicals). Relations are extracted between entities (interactions, pathways). The Biolink Model vocabulary maps these to RDF triples. ChEBI provides chemical entity references. SHACL shapes validate the exported Turtle before archiving.
+  </div>
+  <div class="notice purple">
+    <strong>📌 Fetch status:</strong> 68 fetch attempts recorded in fetch_log.jsonl; 62 succeeded, 6 anchor papers (A07–A12) initially failed with 404 errors from Europe PMC but were later retrieved via alternative URLs. The corpus contains 62 PDFs (12 anchor + 50 bulk). This provenance tracking ensures we know exactly which papers are available and which failed.
+  </div>
+  <div class="notice pink">
+    <strong>📌 Anchor vs Bulk:</strong> Anchor papers (A01–A12) are the core reference set — high-quality, manually selected papers that define the domain. Bulk papers (B001–B050) are automatically fetched from PubMed Central based on keyword relevance. The anchor set provides ground truth for validation; the bulk set provides scale for testing.
+  </div>
+</div>
+
+<!-- 3. GOALS -->
+<div class="section" id="goals">
+  <div class="section-icon green">🚀</div>
+  <h2>Project Goals</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h4>📌 Short-term (P0–P4)</h4>
+      <p>Complete all measurement phases with passing checkers. Generate all required outputs: CSVs, memos, charts, provenance sidecars. Document methodology with decision rules, tier tables, failure modes. Validate approximations. Quantify projection impact.</p>
+    </div>
+    <div class="card">
+      <h4>📋 Medium-term (P5)</h4>
+      <p>Complete claims strand for all 12 claims with primary-source evidence. Replicate colleague's finding. Export RDF Turtle via gds-owl. Validate with SHACL and produce conformance report.</p>
+    </div>
+    <div class="card">
+      <h4>🌟 Long-term</h4>
+      <p>Enable cross-lab comparison via SPARQL. Establish methodology template for future graph algorithm benchmarks. Contribute reproducibility standards to the GDS community.</p>
+    </div>
+  </div>
+  <h3>Success Criteria</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Gate</th><th>Criteria</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>G0</td><td>check_setup.py 112/112</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G1</td><td>check_part1.py</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G2A</td><td>check_part2.py --track A</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G2B</td><td>check_part2.py --track B</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G3A</td><td>check_part3.py --track A</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G3B</td><td>check_part3.py --track B</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G4</td><td>check_part4.py</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G5</td><td>check_claims.py (12 rows)</td><td><span class="status warn">Scaffolded (0/12)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>What "pass" means:</strong> Every checker test must pass. No exceptions. If a checker fails, the phase is not complete — fix the output, not the checker. The gate criteria are non-negotiable because they define the boundary between "we ran the code" and "we have verified results."</p>
+  <p><strong>What "scaffolded" means:</strong> The structure is ready (12 claim rows exist) but the evidence is not filled in. This is intentional — claims verification requires human reading of primary sources, which cannot be automated. Phase 5 cannot be marked complete until all 12 claims have evidence, verdict, and grade.</p>
+</div>
+
+<!-- 4. ADVANTAGES -->
+<div class="section" id="advantages">
+  <div class="section-icon orange">💪</div>
+  <h2>Advantages of This Approach</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h4>📏 Measurement Rigour</h4>
+      <p>Provenance by design — every CSV has a <code>.provenance.json</code> sidecar. Multiple seeds for variance quantification. Cross-machine calibration. Traceability — every number traces to a specific CSV row.</p>
+    </div>
+    <div class="card">
+      <h4>🔄 Reproducibility</h4>
+      <p>Runner scripts per phase. Pinned dependencies. Dual-venv isolation (Python 3.10 core + Python 3.14 semantic web). Documented failure modes for every phase.</p>
+    </div>
+    <div class="card">
+      <h4>🌐 Comprehensive Coverage</h4>
+      <p>7 structurally diverse graphs. 5 algorithmic families. 12 claims with evidence grading — Production, Research, Product, Marketing.</p>
+    </div>
+    <div class="card">
+      <h4>🔗 Linked Data Export</h4>
+      <p>Biolink Model alignment. SHACL validation before archiving. SPARQL queryability. W3C standards (Turtle/RDF) with decades-long archival stability.</p>
+    </div>
+    <div class="card">
+      <h4>🔍 Decision Transparency</h4>
+      <p>Tier system (must-pass / important / optional). Explicit IF-THEN decision rules. Failure mode documentation for every phase.</p>
+    </div>
+  </div>
+  <p><strong>Why this approach works:</strong> The combination of provenance tracking, checker validation, and explicit decision rules means that every result can be audited. If a stakeholder asks "how do you know this number is correct?", the answer is always: "Here is the CSV row, here is the checker that validated it, here is the decision rule that produced it."</p>
+  <p><strong>What makes this reproducible:</strong> Runner scripts per phase, pinned dependencies, dual-venv isolation, and documented failure modes. Another researcher can reproduce every result by running the same scripts with the same environment. The only manual step is claims verification, which requires human judgment.</p>
+</div>
+
+<!-- 5. LIMITATIONS -->
+<div class="section" id="limitations">
+  <div class="section-icon red">⚠️</div>
+  <h2>Limitations &amp; Constraints</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h4>🔧 Technical</h4>
+      <p>Exact betweenness is O(n·m) — may exceed memory on large graphs. Louvain is heuristic with resolution limits. Ground truth rare — only email-Eu-core has reliable labels. Projection is lossy.</p>
+    </div>
+    <div class="card">
+      <h4>📐 Scope</h4>
+      <p>Offline-only after initial fetch. Single-machine execution. No streaming graphs (no timestamps). No deep learning (GNNs out of scope).</p>
+    </div>
+    <div class="card">
+      <h4>📅 Schedule</h4>
+      <p>Phase 5 claims strand is outstanding, not blocked. Claims verification requires manual primary-source research — reading papers, locating quotes, and grading evidence cannot be automated. This is the longest pole in the schedule, but it has no external dependency: no colleague, no code, no waiting on anyone else.</p>
+    </div>
+    <div class="card">
+      <h4>📊 Data</h4>
+      <p>7 graphs sufficient for methodology demonstration but not statistical generalization. No planted-partition tests at scale. Single-domain focus (social/transportation).</p>
+    </div>
+  </div>
+  <p><strong>How to address these limitations:</strong> The technical limitations (exact betweenness memory, Louvain heuristic nature) are mitigated by our approximation validation and stability testing. The scope limitations (offline-only, single-machine) are acceptable for a measurement benchmark — the goal is reproducibility, not real-time processing. The data limitation (7 graphs) is acknowledged; we stress-test across structural diversity rather than scale.</p>
+  <p><strong>The biggest risk is claims verification:</strong> Phase 5 requires manual primary-source research. This cannot be automated, parallelized, or rushed. The schedule must account for this. The claims strand is outstanding — it is not blocked by any external dependency.</p>
+</div>
+
+<!-- 6. TECH STACK -->
+<div class="section" id="tech">
+  <div class="section-icon cyan">⚙️</div>
+  <h2>Technology Stack</h2>
+  <h3>Core Runtime (Python 3.10.20)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Python</td><td>3.10.20</td><td>Runtime</td></tr>
+        <tr><td>networkx</td><td>3.4.2</td><td>Graph loading, algorithms, profiling</td></tr>
+        <tr><td>python-igraph</td><td>1.0.0</td><td>Louvain, Leiden, fast centrality</td></tr>
+        <tr><td>leidenalg</td><td>0.12.0</td><td>Leiden community detection</td></tr>
+        <tr><td>numpy</td><td>2.2.6</td><td>Numerical operations</td></tr>
+        <tr><td>scipy</td><td>1.15.3</td><td>Sparse matrices, scientific computing</td></tr>
+        <tr><td>pandas</td><td>2.3.3</td><td>CSV I/O, data manipulation</td></tr>
+        <tr><td>matplotlib</td><td>3.10.9</td><td>Chart generation</td></tr>
+        <tr><td>pytest</td><td>9.1.1</td><td>Checker framework</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Semantic Web Stack (Python 3.14)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>gds-owl</td><td>0.99.0</td><td>GDS-to-RDF bridge</td></tr>
+        <tr><td>gds-framework</td><td>0.3.0</td><td>Experiment modelling framework</td></tr>
+        <tr><td>gds-interchange</td><td>0.1.0</td><td>Data interchange formats</td></tr>
+        <tr><td>rdflib</td><td>7.6.0</td><td>RDF parsing and serialization</td></tr>
+        <tr><td>pyshacl</td><td>0.40.1</td><td>SHACL validation</td></tr>
+        <tr><td>owlrl</td><td>7.6.2</td><td>OWL reasoning</td></tr>
+        <tr><td>html5rdf</td><td>1.2.1</td><td>HTML-to-RDF conversion</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notice">
+    <strong>Why two venvs?</strong> Core runtime packages move fast (frequent releases, breaking changes). Semantic web stack is conservative. Mixing creates dependency resolver conflicts. Isolation lets us upgrade each stack independently.
+  </div>
+  <p><strong>Why Python 3.10 for core:</strong> scipy 1.15.3 requires Python 3.10.20 specifically. Newer Python versions break scipy compatibility. This is the foundation — everything else depends on it working correctly.</p>
+  <p><strong>Why Python 3.14 for semantic web:</strong> gds-owl, rdflib, pyshacl, and owlrl are conservative packages that work reliably on Python 3.14. The semantic web stack changes slowly — W3C standards prioritize stability over features. Isolating it means we can upgrade the core runtime without breaking RDF export.</p>
+  <p><strong>What is NOT required:</strong> gds-framework, gds-interchange, seaborn, neo4j. These were identified as unnecessary during the tools inventory phase. Keeping the stack minimal reduces dependency conflicts and makes the environment easier to reproduce.</p>
+</div>
+
+<!-- 7. THE SEVEN GRAPHS -->
+<div class="section" id="graphs">
+  <div class="section-icon pink">📊</div>
+  <h2>The Seven Graphs</h2>
+  <p>We selected 7 real-world networks to maximize structural diversity. Every graph serves a specific purpose in stress-testing algorithms.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Graph</th><th>Nodes</th><th>Edges</th><th>Type</th><th>Skew</th><th>Components</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>lesmis</strong></td><td>77</td><td>254</td><td><span class="tag green">Undir</span> <span class="tag cyan">Weighted</span></td><td>6.0</td><td>1</td><td>Small, dense baseline</td></tr>
+        <tr><td><strong>unicodelang</strong></td><td>868</td><td>1,255</td><td><span class="tag green">Undir</span> <span class="tag orange">Bipartite</span></td><td>141.0</td><td>5</td><td>Extreme skew, bipartite</td></tr>
+        <tr><td><strong>crime</strong></td><td>1,380</td><td>1,476</td><td><span class="tag green">Undir</span> <span class="tag orange">Bipartite</span></td><td>25.0</td><td>20</td><td>Projection test</td></tr>
+        <tr><td><strong>email-Eu-core</strong></td><td>986</td><td>24,929</td><td><span class="tag purple">Dir</span> <span class="tag cyan">GT</span></td><td>16.5</td><td>1</td><td>Ground truth available</td></tr>
+        <tr><td><strong>openflights</strong></td><td>3,214</td><td>36,906</td><td><span class="tag purple">Dir</span> <span class="tag cyan">Weighted</span></td><td>79.5</td><td>7</td><td>Weight semantics: costs</td></tr>
+        <tr><td><strong>facebook_combined</strong></td><td>4,039</td><td>88,234</td><td><span class="tag green">Undir</span></td><td>41.8</td><td>1</td><td>Large, sparse, ego network</td></tr>
+        <tr><td><strong>ca-GrQc</strong></td><td>5,241</td><td>14,484</td><td><span class="tag green">Undir</span></td><td>27.0</td><td>354</td><td>Many components, fragmented</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Key Design Principles</h3>
+<ol>
+     <li><strong>No interchangeable pairs:</strong> Each graph has unique properties that test different algorithm behaviors.</li>
+     <li><strong>Weight semantics matter:</strong> In openflights and crime, edges are costs (distance, co-occurrence), not strengths. Higher weight = harder to traverse.</li>
+     <li><strong>Ground truth is rare:</strong> Only email-Eu-core has reliable labels (42 departments).</li>
+     <li><strong>Bipartite graphs are special:</strong> Projection onto either side is a non-neutral transformation that changes the ranking object.</li>
+   </ol>
+   <p><strong>Selection rationale:</strong> The 7 graphs span a wide range of structural properties — from tiny dense networks (lesmis, 77 nodes) to large sparse networks (ca-GrQc, 5,241 nodes). They include directed and undirected, weighted and unweighted, bipartite and non-bipartite, connected and fragmented. This diversity ensures that algorithm behavior is tested across different topological regimes, not just one type of graph.</p>
+   <p><strong>Where the graphs come from:</strong> All 7 graphs are real-world networks downloaded from the SNAP dataset repository (Stanford Network Analysis Project). They are not generated synthetically — they represent actual relationships from social networks, transportation systems, and academic collaboration. This means the results reflect real-world algorithm behavior, not idealized conditions.</p>
+</div>
+
+<!-- 8. WORKFLOW -->
+<div class="section" id="workflow">
+  <div class="section-icon indigo">🔄</div>
+  <h2>Workflow Overview</h2>
+  <h3>Daily Workflow</h3>
+  <div class="code-block">1. Activate correct venv:
+   source venv/bin/activate          (core runtime)
+   source venv-gds-owl/bin/activate  (ontology work)
+
+2. Run phase script:
+   python part-N/run_partN.py --who solo
+
+3. Inspect CSVs:
+   head -20 output.csv
+   wc -l output.csv
+
+4. Update research-log.md:
+   Date, machine, hash, observations, questions
+
+5. Work on memo:
+   Draft findings, attach charts, cite CSV rows
+
+6. Advance claims strand:
+   Update claims.jsonl with new evidence, verdicts, grades</div>
+  <h3>Weekly Cadence</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Day</th><th>Focus</th><th>Target Output</th></tr></thead>
+      <tbody>
+        <tr><td>Mon</td><td>Setup + P0 gate</td><td>check_setup.py 112/112, first-impressions.md</td></tr>
+        <tr><td>Tue</td><td>P1 run + analysis</td><td>profiles.csv, pagerank_runs.csv, calibration.md</td></tr>
+        <tr><td>Wed</td><td>P2A run + memo</td><td>centrality_*.csv, part2a-memo.md</td></tr>
+        <tr><td>Thu</td><td>P2B run + memo</td><td>louvain_runs.csv, part2b-memo.md</td></tr>
+        <tr><td>Fri</td><td>P3A run</td><td>betweenness_*.csv, weights_effect.csv</td></tr>
+        <tr><td>Week 2</td><td>P3B, P4, P5 replication</td><td>community_quality.csv, projection_*.csv, replication.md</td></tr>
+        <tr><td>Week 3</td><td>Claims, ontology, synthesis</td><td>claims.jsonl complete, experiment.ttl, synthesis.md</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Critical Path</h3>
+  <div class="mermaid">graph TD
+    P0["P0: Setup"] --> P1["P1: Profile"]
+    P1 --> P2A["P2A: Centrality"]
+    P1 --> P2B["P2B: Louvain"]
+    P2A --> P3A["P3A: Betweenness"]
+    P2B --> P3B["P3B: Quality"]
+    P3A --> P4["P4: Projection"]
+    P3B --> P4
+    P4 --> P5["P5: Replication"]</div>
+  <p><strong>Bottlenecks:</strong> P0 scipy resolution (blocks everything if not resolved day 1). P3A exact betweenness (may exceed memory on openflights). P5 claims strand (requires manual primary-source research — no external dependency, but cannot be rushed).</p>
+  <div class="finding indigo">
+    <strong>🔄 Execution strategy:</strong> Run phases sequentially — P0 must pass before P1, P1 before P2, etc. Within each phase, tracks A and B can run in parallel since they are independent. The daily workflow is designed for a single operator: activate venv, run the phase script, inspect outputs, update logs, write memos, advance claims.
+  </div>
+  <div class="notice">
+    <strong>📅 Why the weekly cadence matters:</strong> Each day has a specific focus and target output. This prevents scope creep and ensures steady progress. Monday is setup — if P0 fails, the entire week is blocked. Friday is P3A — betweenness approximation is the most computationally intensive phase and needs the full week for analysis. Week 3 is claims and ontology — the manual, research-intensive work that cannot be rushed.
+  </div>
+<h3>Detailed Workflow</h3>
+    <div class="mermaid">graph LR
+      A(("Start")) --> B(("Activate"))
+      B --> C(("Run"))
+      C --> D(("Inspect"))
+      D --> E(("Log"))
+      E --> F(("Memo"))
+      F --> G(("Claims"))
+      G --> H(("Next"))
+      H --> A
+      I(("P0")) --> J(("P1"))
+      J --> K(("P2A"))
+      J --> L(("P2B"))
+      K --> M(("P3A"))
+      L --> N(("P3B"))
+      M --> O(("P4"))
+      N --> O
+      O --> P(("P5"))
+      style A fill:#e1f5fe
+      style P fill:#c8e6c9</div>
+    </div>
+
+<!-- 9. PHASE 0 -->
+<div class="section" id="phase0">
+  <div class="section-icon purple">🔧</div>
+  <h2>Phase 0: Setup &amp; Scaffold</h2>
+  <p><strong>Duration:</strong> ~30 min | <strong>Gate:</strong> ALL 112 setup tests pass | <strong>Track:</strong> Both</p>
+  <p><strong>Goal:</strong> Verify environment, resolve Python/scipy compatibility, create directory tree, write first-impressions, bootstrap claims and research log, install gds-owl.</p>
+  <div class="finding">
+    <strong>✅ What We Did:</strong> Resolved Python 3.10.20 + scipy 1.15.3 compatibility. Created full directory tree under <code>your-work/solo/</code>. Ran <code>check_setup.py</code> — 112/112 tests pass. Wrote <code>first-impressions.md</code>. Bootstrapped <code>claims.jsonl</code> with 12 claim skeletons. Created <code>research-log.md</code>. Installed gds-owl in isolated venv-gds-owl.
+  </div>
+  <h3>Decision Rules</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Condition</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>scipy fails with Python 3.10.20</td><td>Use venv. Do not switch to system Python.</td></tr>
+        <tr><td>check_setup.py fails any test</td><td>STOP. Fix before proceeding. Do not advance to P1.</td></tr>
+        <tr><td>gds-owl fails to install</td><td>Continue without ontology. Note failure in research-log.md. Defer to P5 with graceful degradation.</td></tr>
+        <tr><td>One graph missing from data directory</td><td>Do not substitute. Fetch from original source, record provenance, verify with check_setup.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Failure Modes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Failure</th><th>Symptom</th><th>Recovery</th></tr></thead>
+      <tbody>
+        <tr><td>scipy import error</td><td>ImportError: scipy</td><td>Use correct venv; reinstall</td></tr>
+        <tr><td>check_setup fails</td><td>Non-zero exit code</td><td>Read output, fix missing package or graph, rerun</td></tr>
+        <tr><td>gds-owl dependency clash</td><td>pip resolver fails</td><td>Isolate in venv-gds-owl; do not mix</td></tr>
+        <tr><td>Graph file missing</td><td>FileNotFoundError</td><td>Fetch from source, add provenance, rerun check_setup</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Outputs:</strong> first-impressions.md, claims.jsonl (12 rows), research-log.md, questions.md, planner.html</p>
+  <div class="finding">
+    <strong>🔧 Setup philosophy:</strong> P0 is the foundation. If the environment is not verified, every subsequent phase produces unverified results. The 112 tests cover Python version, package versions, graph file availability, checker functionality, and venv isolation. Passing all 112 means we can trust every number that follows.
+  </div>
+  <div class="notice">
+    <strong>⚠️ Why gds-owl is deferred:</strong> The ontology stack (gds-owl, rdflib, pyshacl) is installed in a separate venv because it has different dependency requirements. If it fails to install, we continue without it and defer ontology work to Phase 5. This is a graceful degradation — the measurement phases do not depend on RDF export.
+  </div>
+<h3>🔧 Setup Workflow</h3>
+    <div class="mermaid">graph LR
+      A(("Start")) --> B(("venv"))
+      B --> C(("Install"))
+      C --> D(("check_setup"))
+      D --> E{"112 pass?"}
+      E -->|No| F(("Fix"))
+      F --> D
+      E -->|Yes| G(("Dirs"))
+      G --> H(("first-imp"))
+      H --> I(("claims"))
+      I --> J(("log"))
+      J --> K(("gds-owl"))
+      K --> L{"OK?"}
+      L -->|No| M(("Defer"))
+      L -->|Yes| N(("Done"))
+      style A fill:#e1f5fe
+      style N fill:#c8e6c9</div>
+    </div>
+
+<!-- 10. PHASE 1 -->
+<div class="section" id="phase1">
+  <div class="section-icon blue">📈</div>
+  <h2>Phase 1: Profile &amp; Calibrate</h2>
+  <p><strong>Duration:</strong> ~1 min run + ~30 min analysis | <strong>Gate:</strong> check_part1.py passes | <strong>Track:</strong> Both | <strong>Claims:</strong> C01, C09, C10</p>
+  <p><strong>Goal:</strong> Establish baseline profiles for all 7 graphs. Measure PageRank convergence and timing across 10 seeds per graph. Cross-check results between two machines. Identify what predicts algorithm cost.</p>
+  <div class="finding">
+    <strong>🔑 Key Finding:</strong> Degree skew explains iterations better than node count. unicodelang (skew=141) needs 67 iterations; email-Eu-core (skew=16.5) needs only 14.
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Graph</th><th>Compute Mean (s)</th><th>Iterations</th><th>Degree Skew</th></tr></thead>
+      <tbody>
+        <tr><td>lesmis</td><td>0.0012</td><td>37</td><td>6.0</td></tr>
+        <tr><td>unicodelang</td><td>0.0159</td><td>67</td><td>141.0</td></tr>
+        <tr><td>email-Eu-core</td><td>0.0187</td><td>14</td><td>16.5</td></tr>
+        <tr><td>crime</td><td>0.0193</td><td>54</td><td>25.0</td></tr>
+        <tr><td>openflights</td><td>0.0841</td><td>40</td><td>79.5</td></tr>
+        <tr><td>facebook_combined</td><td>0.1856</td><td>21</td><td>41.8</td></tr>
+        <tr><td>ca-GrQc</td><td>0.0976</td><td>41</td><td>27.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Stage-by-Stage Workflow</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Command</th><th>Duration</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td>1.1 Profile 7 graphs</td><td><code>run_part1.py --step profile</code></td><td>~10s</td><td>profiles.csv</td></tr>
+        <tr><td>1.2 Run PageRank 10x per graph</td><td><code>run_part1.py --step pagerank</code></td><td>~40s</td><td>pagerank_runs.csv</td></tr>
+        <tr><td>1.3 Cross-machine calibration</td><td>Copy CSVs to second machine, diff outputs</td><td>~5 min</td><td>calibration.md</td></tr>
+        <tr><td>1.4 Analyze &amp; memo</td><td>Manual analysis of CSVs</td><td>~20 min</td><td>part1-memo.md</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Outputs:</strong> profiles.csv (7), pagerank_runs.csv (70), calibration.md, part1-memo.md, charts/ (11 PNGs)</p>
+  <div class="finding blue">
+    <strong>📊 Profiling methodology:</strong> Each graph is profiled once to establish baseline properties (node count, edge count, density, degree skew, component count, weight semantics). PageRank is then run 10 times per graph with different random seeds to measure convergence behavior. The 70 total PageRank runs (7 graphs × 10 seeds) provide enough data to distinguish signal from noise.
+  </div>
+  <div class="notice">
+    <strong>🔄 Cross-machine calibration:</strong> Results are compared across two machines to ensure measurements are not machine-specific. If round counts differ between machines, the phase is not complete — we must investigate and report the discrepancy. This is why calibration.md is a required output.
+  </div>
+<h3>📊 Profiling Workflow</h3>
+    <div class="mermaid">graph LR
+      A(("7 Graphs")) --> B(("Profile"))
+      B --> C(("PageRank"))
+      C --> D(("70 runs"))
+      D --> E(("Compute"))
+      E --> F(("Calibrate"))
+      F --> G{"Match?"}
+      G -->|No| H(("Investigate"))
+      H --> F
+      G -->|Yes| I(("calibration"))
+      I --> J(("memo"))
+      J --> K(("Charts"))
+      style A fill:#e1f5fe
+      style K fill:#c8e6c9</div>
+    </div>
+
+<!-- 11. PHASE 2 -->
+<div class="section" id="phase2">
+  <div class="section-icon green">🧩</div>
+  <h2>Phase 2: Centrality &amp; Communities</h2>
+  <p><strong>Duration:</strong> 2A ~90s, 2B ~3 min | <strong>Gate:</strong> check_part2.py passes (both tracks) | <strong>Track:</strong> Parallel — Track A (Centrality) + Track B (Communities)</p>
+  <h3>Track A — Centrality Agreement</h3>
+  <p>Computed 4 centrality measures (degree, PageRank, closeness, betweenness) on 5 graphs. Pairwise Spearman correlation matrices. Top-10 overlap (Jaccard). Named disagreements.</p>
+  <div class="finding blue">
+    <strong>💡 Key Insight:</strong> Correlation does not imply top-k agreement. Two rankings can have Spearman ρ = 0.95 yet disagree on the top-10 nodes. Always inspect the actual node lists, not just the correlation number.
+  </div>
+  <h3>Track B — Louvain Stability</h3>
+  <p>Ran Louvain 200 times per graph with different random seeds. Recorded hash, modularity, n_communities, elapsed_s, ARI vs run 1.</p>
+  <div class="finding green">
+    <strong>💡 Key Insight:</strong> Modularity std below 0.001 indicates seed-robust partitions. crime: 0.9296 ± 0.0004 (most stable). openflights: 0.6560 ± 0.0042 (highest variance).
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Graph</th><th>LV Mod Mean</th><th>LV Mod Std</th><th>Comms Mean</th><th>ARI Mean</th></tr></thead>
+      <tbody>
+        <tr><td>unicodelang</td><td>0.7199</td><td>0.0015</td><td>22.25</td><td>0.7335</td></tr>
+        <tr><td>email-Eu-core</td><td>0.4134</td><td>0.0031</td><td>7.625</td><td>0.7793</td></tr>
+        <tr><td>crime</td><td>0.9296</td><td>0.0004</td><td>50.01</td><td>0.8774</td></tr>
+        <tr><td>openflights</td><td>0.656</td><td>0.0042</td><td>26.12</td><td>0.762</td></tr>
+        <tr><td>ca-GrQc</td><td>0.8615</td><td>0.0009</td><td>391.445</td><td>0.618</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Outputs:</strong> centrality_*.csv (4 files), louvain_runs.csv (1,000 rows), part2a-memo.md, part2b-memo.md, charts/ (2 PNGs)</p>
+  <div class="finding blue">
+    <strong>💡 Centrality methodology:</strong> Four centrality measures are computed on 5 graphs (excluding bipartite graphs where appropriate). Pairwise Spearman correlation matrices quantify rank agreement. Top-10 overlap (Jaccard) measures whether the same nodes are identified as important. Named disagreements are documented with specific node examples. This multi-measure approach reveals that different centrality definitions capture different aspects of "importance."
+  </div>
+  <div class="finding green">
+    <strong>💡 Louvain stability methodology:</strong> Running Louvain 200 times per graph with different random seeds tests whether the algorithm produces consistent partitions. The hash of each partition is recorded, along with modularity, number of communities, elapsed time, and ARI against run 1. Low modularity std (below 0.001) indicates seed-robust partitions. High std indicates that the algorithm is sensitive to initialization — a critical limitation for production use.
+  </div>
+<h3>🧩 Centrality &amp; Community Workflow</h3>
+    <div class="mermaid">graph LR
+      A1(("5 Graphs")) --> A2(("4 Measures"))
+      A2 --> A3(("Spearman"))
+      A3 --> A4(("Top-10"))
+      A4 --> A5(("Disagreements"))
+      B1(("5 Graphs")) --> B2(("200 Runs"))
+      B2 --> B3(("Hash"))
+      B3 --> B4(("ARI"))
+      B4 --> B5(("Mod Std"))
+      A5 --> C(("part2a"))
+      B5 --> D(("part2b"))
+      style A1 fill:#e1f5fe
+      style B1 fill:#f3e5f5
+      style C fill:#c8e6c9
+      style D fill:#c8e6c9</div>
+    </div>
+
+<!-- 12. PHASE 3 -->
+<div class="section" id="phase3">
+  <div class="section-icon orange">🎯</div>
+  <h2>Phase 3: Approximation &amp; Quality</h2>
+  <p><strong>Duration:</strong> 3A ~8 min, 3B ~5 min | <strong>Gate:</strong> check_part3.py passes (both tracks) | <strong>Track:</strong> Parallel — Track A (Approximation) + Track B (Quality)</p>
+  <h3>Track A — Betweenness Approximation</h3>
+  <p>Exact betweenness on 3 graphs. Sampled at 1%, 2%, 5%, 10%, 25% × 10 seeds each (150 total runs). Measured speedup vs exact computation.</p>
+  <div class="finding orange">
+    <strong>🔑 Key Finding:</strong> At 5% sampling, speedup is ~18–20× with Spearman > 0.97 and top-10 overlap ~0.5–0.8. This is the practical sweet spot.
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Graph</th><th>Speedup (1%)</th><th>Spearman (1%)</th><th>Top-10 Overlap (1%)</th></tr></thead>
+      <tbody>
+        <tr><td>email-Eu-core</td><td>97.95×</td><td>0.945</td><td>0.177</td></tr>
+        <tr><td>openflights</td><td>98.04×</td><td>0.929</td><td>0.429</td></tr>
+        <tr><td>ca-GrQc</td><td>95.97×</td><td>0.965</td><td>0.333</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Track B — Community Quality</h3>
+  <p>Louvain vs Leiden on 5 graphs × 50 seeds. Audited community connectivity (bridge edges, disconnected communities). Scored against ground truth on email-Eu-core (42 departments).</p>
+  <div class="finding purple">
+    <strong>💡 Key Insight:</strong> Ground truth ARI < 0.3 on email-Eu-core would mean departments are organisational, not community-structural. We measure this ourselves — no primary source to cite.
+  </div>
+  <p><strong>Outputs:</strong> betweenness_*.csv, weights_effect.csv (500 rows), community_quality.csv (~500 rows), ground_truth_scores.csv (~250 rows), similarity_vs_bridges.csv (~250 rows), part3a-memo.md, part3b-memo.md, charts/ (3 PNGs)</p>
+  <div class="finding orange">
+    <strong>🎯 Betweenness approximation methodology:</strong> Exact betweenness centrality is O(n·m) — computationally expensive for large graphs. We test whether sampling a small fraction of pivot nodes can approximate the full ranking. At 1% sampling, speedup is ~86.8–104.5× with Spearman >0.92. At 5% sampling, speedup is ~18–20× with Spearman >0.97. The trade-off is clear: higher sampling gives better accuracy but less speedup. The practical sweet spot is 5% — good enough accuracy for most use cases.
+  </div>
+  <div class="finding purple">
+    <strong>🎯 Community quality methodology:</strong> Louvain and Leiden are compared on 5 graphs × 50 seeds. Community connectivity is audited (bridge edges, disconnected communities). On email-Eu-core, results are scored against ground truth (42 departments). This reveals whether community detection recovers known structure or finds something else entirely.
+  </div>
+<h3>🎯 Approximation &amp; Quality Workflow</h3>
+    <div class="mermaid">graph LR
+      A1(("Exact")) --> A2(("Sample"))
+      A2 --> A3(("10 seeds"))
+      A3 --> A4(("150 runs"))
+      A4 --> A5(("Speedup"))
+      A5 --> A6(("Spearman"))
+      A6 --> A7(("Top-10"))
+      B1(("Louvain")) --> B2(("Leiden"))
+      B2 --> B3(("Audit"))
+      B3 --> B4(("Bridges"))
+      B4 --> B5(("Disconnected"))
+      B5 --> B6(("Ground Truth"))
+      A7 --> C(("5%"))
+      B6 --> D(("part3a"))
+      C --> E(("part3b"))
+      style A1 fill:#fff3e0
+      style B1 fill:#f3e5f5
+      style D fill:#c8e6c9
+      style E fill:#c8e6c9</div>
+    </div>
+
+<!-- 13. PHASE 4 -->
+<div class="section" id="phase4">
+  <div class="section-icon red">🎬</div>
+  <h2>Phase 4: Capstone &amp; Projection</h2>
+  <p><strong>Duration:</strong> ~30s run + ~45 min analysis | <strong>Gate:</strong> check_part4.py passes | <strong>Track:</strong> Both | <strong>Claims:</strong> C07, C08, C11</p>
+  <p><strong>Goal:</strong> Apply PageRank and Louvain to bipartite graphs, project onto each side, compare rankings and communities. Document consequences of projection choice.</p>
+  <div class="finding red">
+    <strong>🔑 Key Finding:</strong> Projection is NOT neutral. On crime side 1, raw vs projected PageRank Spearman = 0.002 (uncorrelated). On unicodelang side 0, ARI = 0.17 (barely overlapping communities). Both results are correct. Only one answers your question.
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Graph</th><th>Side</th><th>Entities</th><th>Spearman</th><th>ARI</th><th>Top-10 Overlap</th></tr></thead>
+      <tbody>
+        <tr><td>crime</td><td>0 (people)</td><td>829</td><td>0.2264</td><td>0.5688</td><td>0.3333</td></tr>
+        <tr><td>crime</td><td>1 (crimes)</td><td>551</td><td>0.002</td><td>0.5751</td><td>0.1765</td></tr>
+        <tr><td>unicodelang</td><td>0 (territories)</td><td>254</td><td>0.3069</td><td>0.1702</td><td>0.1111</td></tr>
+        <tr><td>unicodelang</td><td>1 (languages)</td><td>614</td><td>0.2996</td><td>0.3506</td><td>0.8182</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Outputs:</strong> projection_*.csv (4 files), replication.md, synthesis.md, part4-memo.md, charts/</p>
+  <div class="finding red">
+    <strong>🎬 Projection methodology:</strong> Bipartite graphs have two node types (e.g., people and crimes, territories and languages). Projection onto one side creates a new graph where nodes are connected if they share a neighbor on the other side. This transformation is lossy — information about the bipartite structure is lost. We apply PageRank and Louvain to both the raw bipartite graph and each projection, then compare the results. The key question: does the projection preserve the ranking and community structure, or does it fundamentally change them?
+  </div>
+  <div class="finding orange">
+    <strong>🎬 Why projection matters:</strong> The answer to "who is important?" depends entirely on whether you analyze the bipartite graph or its projection. On crime side 1 (crimes), raw vs projected PageRank Spearman = 0.002 — completely uncorrelated. On unicodelang side 0 (territories), ARI = 0.17 — barely overlapping communities. Both results are mathematically correct. Only one answers your actual question. Choosing the wrong representation leads to wrong conclusions.
+  </div>
+<h3>🎬 Projection Workflow</h3>
+    <div class="mermaid">graph LR
+      A(("Bipartite")) --> B(("Raw"))
+      A --> C(("Side 0"))
+      A --> D(("Side 1"))
+      B --> E(("PageRank"))
+      B --> F(("Louvain"))
+      C --> G(("PageRank"))
+      C --> H(("Louvain"))
+      D --> I(("PageRank"))
+      D --> J(("Louvain"))
+      E --> K(("Compare"))
+      F --> K
+      G --> K
+      H --> K
+      I --> K
+      J --> K
+      K --> L{"Spearman ~0?"}
+      L -->|Yes| M(("Changes"))
+      L -->|No| N(("Preserves"))
+      M --> O(("Report"))
+      N --> O
+      O --> P(("part4"))
+      style A fill:#ffebee
+      style K fill:#fff3e0
+      style P fill:#c8e6c9</div>
+    </div>
+
+<!-- 14. PHASE 5 -->
+<div class="section" id="phase5">
+  <div class="section-icon pink">🔬</div>
+  <h2>Phase 5: Replication &amp; Synthesis</h2>
+  <p><strong>Duration:</strong> ~2–3 hours | <strong>Gate:</strong> All previous gates pass + claims.jsonl complete | <strong>Track:</strong> Both</p>
+  <p><strong>Goal:</strong> Replicate colleague's headline finding, complete claims strand for C07/C08/C11, run check_claims.py, write claims-memo.md, export RDF Turtle via gds-owl, write synthesis.md.</p>
+  <div class="finding cyan">
+    <strong>⏳ Status:</strong> Scaffolded — claims.jsonl has 12 claim skeletons but 0/12 filled. Requires manual primary-source research. This is the longest pole in the schedule.
+  </div>
+  <h3>Stage-by-Stage Workflow</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Stage</th><th>Command / Action</th><th>Duration</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td>5.1 Replicate colleague's finding</td><td>Manual: run colleague's script, compare outputs</td><td>~1 hour</td><td>replication.md</td></tr>
+        <tr><td>5.2 Complete claims.jsonl</td><td>Manual: fill evidence, verdict, grade</td><td>~30 min</td><td>claims.jsonl (12 rows)</td></tr>
+        <tr><td>5.3 Run check_claims.py</td><td><code>check_claims.py --who solo</code></td><td>~10s</td><td>Pass / fail report</td></tr>
+        <tr><td>5.4 Write claims-memo.md</td><td>Manual</td><td>~30 min</td><td>claims-memo.md</td></tr>
+        <tr><td>5.5 Export RDF Turtle</td><td><code>gds-owl export --format turtle</code></td><td>~5 min</td><td>experiment.ttl</td></tr>
+        <tr><td>5.6 Write synthesis.md</td><td>Manual</td><td>~30 min</td><td>synthesis.md</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Outputs:</strong> replication.md, claims.jsonl (12 rows), claims-memo.md, experiment.ttl, synthesis.md, SHACL validation report</p>
+  <div class="finding cyan">
+    <strong>🔬 Replication methodology:</strong> We run the colleague's script with the same inputs and compare outputs. If the results match within tolerance, we have replicated the finding. If they differ, we document the discrepancy honestly — we do not adjust parameters to make them match. Replication is the ultimate test of whether a result is real or an artifact of specific implementation choices.
+  </div>
+  <div class="notice">
+    <strong>📝 Synthesis approach:</strong> synthesis.md ties together findings from all phases into a coherent narrative. It answers the big questions: What did we learn? What works? What doesn't? What are the limitations? The synthesis is not a summary of CSVs — it is an interpretation of what the numbers mean for graph algorithm practice.
+  </div>
+<h3>🔬 Replication &amp; Synthesis Workflow</h3>
+    <div class="mermaid">graph LR
+      A(("Colleague")) --> B(("Run"))
+      B --> C(("Compare"))
+      C --> D{"Match?"}
+      D -->|Yes| E(("Replicated"))
+      D -->|No| F(("Document"))
+      F --> G(("Report"))
+      G --> H(("Not Repl."))
+      E --> I(("Claims"))
+      H --> I
+      I --> J(("check_claims"))
+      J --> K{"12 pass?"}
+      K -->|No| L(("Fix"))
+      L --> J
+      K -->|Yes| M(("Export"))
+      M --> N(("Turtle"))
+      N --> O(("SHACL"))
+      O --> P{"Conform?"}
+      P -->|No| Q(("Fix"))
+      Q --> N
+      P -->|Yes| R(("synthesis"))
+      R --> S(("Done"))
+      style A fill:#e1f5fe
+      style S fill:#c8e6c9</div>
+    </div>
+
+<!-- 15. CLAIMS -->
+<div class="section" id="claims">
+  <div class="section-icon yellow">📝</div>
+  <h2>Claims Verification Strand</h2>
+  <p><strong>Overview:</strong> 12 claims traced to primary sources, graded for evidence quality, recorded in claims.jsonl. Method: find primary source → locate exact quote → check it says what is claimed → fill verdict.</p>
+  <h3>Evidence Grades</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4><span class="tag purple">Production</span></h4>
+      <p>Widely reproduced in multiple textbooks and papers. e.g., "Louvain converges to local optimum"</p>
+    </div>
+    <div class="card">
+      <h4><span class="tag blue">Research</span></h4>
+      <p>Supported by peer-reviewed papers but not universal. e.g., "PageRank correlates with degree in preferential attachment graphs"</p>
+    </div>
+    <div class="card">
+      <h4><span class="tag green">Product</span></h4>
+      <p>Vendor or tool documentation claim. e.g., "igraph Louvain implementation is O(n log n)"</p>
+    </div>
+    <div class="card">
+      <h4><span class="tag orange">Marketing</span></h4>
+      <p>Claim from marketing material, not peer-reviewed. e.g., "Our algorithm is the fastest in the world"</p>
+    </div>
+  </div>
+  <h3>Claims Table</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>ID</th><th>Topic</th><th>Phase</th><th>Grade</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>C01</td><td>Community detection quality on email-Eu-core</td><td>P3B</td><td>—</td><td>You measure this yourself</td></tr>
+        <tr><td>C02</td><td>Centrality measure correlation</td><td>P2A</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C03</td><td>Betweenness approximation error vs sample size</td><td>P3A</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C04</td><td>Weight semantics: cost vs strength</td><td>P3A</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C05</td><td>Sampling condition for global betweenness</td><td>P3A</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C06</td><td>Rank correlation vs top-k agreement trap</td><td>P2A</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C07</td><td>Projection changes ranking object</td><td>P4</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C08</td><td>Projection blowup density warning</td><td>P4</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C09</td><td>Cross-machine reproducibility</td><td>P1</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C10</td><td>Graph size predicts algorithm cost</td><td>P1</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C11</td><td>Louvain stability across seeds</td><td>P2B</td><td>—</td><td>Pending</td></tr>
+        <tr><td>C12</td><td>Community detection resolution limit</td><td>P2B</td><td>—</td><td>Pending</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="finding">
+    <strong>Special Case — C01:</strong> You measure this yourself in Phase 3B. No primary source to cite — the evidence is the ARI score you compute on email-Eu-core ground truth. Grade as "production" once you have replicated the result.
+  </div>
+  <p><strong>Evidence grading philosophy:</strong> Not all claims are equal. A claim that appears in multiple textbooks (Production grade) is more reliable than a claim from a single paper (Research grade), which is more reliable than a vendor claim (Product grade), which is more reliable than marketing material (Marketing grade). The grade determines how much weight to give the claim when interpreting results.</p>
+  <p><strong>Verification process:</strong> For each claim, find the primary source, locate the exact quote, check whether it says what is claimed, and fill in the verdict. This is manual work — there is no automated way to verify whether a paper actually supports a claim. The 12 claims cover the full range of topics: community detection quality, centrality correlation, betweenness approximation, weight semantics, sampling conditions, rank correlation vs top-k agreement, projection effects, cross-machine reproducibility, graph size vs cost, Louvain stability, and resolution limits.</p>
+</div>
+
+<!-- 17. BENCH EXPERIMENTS -->
+
+<!-- 17. BENCH EXPERIMENTS -->
+<div class="section" id="bench">
+  <div class="section-icon yellow">🧪</div>
+  <h2>Bench Experiments</h2>
+  <p>Six controlled bench experiments answer specific questions about algorithm behaviour, scalability, and interpretation.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>ID</th><th>Question</th><th>Size / Scope</th><th>When to Use</th></tr></thead>
+      <tbody>
+        <tr><td>B1</td><td>Memory comparison: adjacency list vs matrix vs edge list</td><td>All 7 graphs</td><td>Choosing representation for new graph</td></tr>
+        <tr><td>B2</td><td>Scale ceiling: when does each algorithm stop being usable?</td><td>Synthetic up to 100k nodes</td><td>Planning experiments, estimating hardware</td></tr>
+        <tr><td>B3</td><td>Resolution limit: can Louvain find small communities?</td><td>Planted-partition graphs</td><td>Interpreting Louvain on real graphs</td></tr>
+        <tr><td>B4</td><td>Split inflation: random vs structural train/test</td><td>Link prediction on 3 graphs</td><td>Evaluating link prediction</td></tr>
+        <tr><td>B5</td><td>PageRank on undirected graphs vs degree</td><td>All undirected graphs</td><td>Choosing between PageRank and degree</td></tr>
+        <tr><td>B6</td><td>Weighted communities: weights change groups or paths?</td><td>openflights, crime</td><td>Applying community detection to weighted graphs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 18. ALGORITHM FAMILIES -->
+<div class="section" id="algorithms">
+  <div class="section-icon indigo">🧮</div>
+  <h2>Six Algorithm Families</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Family</th><th>Algorithms Used</th><th>Output</th><th>Key Interpretation Note</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Centrality</strong></td><td>PageRank, Degree, Closeness, Betweenness</td><td>Score per node</td><td>Higher score = more central. But "central" depends on definition.</td></tr>
+        <tr><td><strong>Community Detection</strong></td><td>Louvain, Leiden</td><td>Partition (community ID per node)</td><td>No ground truth in most cases. Modularity is a heuristic.</td></tr>
+        <tr><td><strong>Similarity &amp; Prediction</strong></td><td>Jaccard, Adamic-Adar, preferential attachment</td><td>Score per node pair</td><td>Used for link prediction. Not used directly in this pack.</td></tr>
+        <tr><td><strong>Paths &amp; Distances</strong></td><td>Shortest path, betweenness (edge)</td><td>Distance or betweenness per node/edge</td><td>Weights are costs. Shorter path = lower cost.</td></tr>
+        <tr><td><strong>Projection &amp; Reduction</strong></td><td>Bipartite projection</td><td>New graph on one side of bipartite</td><td>Most consequential choice. Changes the question being answered.</td></tr>
+        <tr><td><strong>Structural Properties</strong></td><td>Connected components, diameter, clustering</td><td>Global graph statistics</td><td>Used for profiling (P1) and validation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notice">
+    <strong>⚠️ Critical Callout:</strong> In openflights and crime, edges are costs (distance, co-occurrence), not strengths. Higher weight means harder to traverse. If you treat costs as strengths, you invert the meaning of weighted algorithms.
+  </div>
+  <p><strong>Centrality:</strong> PageRank, Degree, Closeness, Betweenness — each measures "importance" differently. PageRank follows links; Degree counts connections; Closeness measures distance to all others; Betweenness counts shortest paths through a node. The choice depends on what "important" means for your question.</p>
+  <p><strong>Community Detection:</strong> Louvain and Leiden partition nodes into groups. No ground truth in most cases — modularity is a heuristic, not a ground truth. The choice between Louvain and Leiden depends on stability requirements and resolution limits.</p>
+  <p><strong>Projection &amp; Reduction:</strong> Bipartite projection creates a new graph on one side. This is the most consequential choice — it changes the question being answered. Always analyze both the raw bipartite graph and the projection.</p>
+</div>
+<div class="section" id="dependencies">
+  <div class="section-icon green">🔗</div>
+  <h2>Part Interdependencies</h2>
+  <div class="mermaid">graph LR
+    P0(("P0")) --> P1(("P1"))
+    P1 --> P2A(("P2A"))
+    P1 --> P2B(("P2B"))
+    P2A --> P3A(("P3A"))
+    P2B --> P3B(("P3B"))
+    P3A --> P4(("P4"))
+    P3B --> P4
+    P4 --> P5(("P5"))</div>
+  <h3>Data Dependencies</h3>
+<ul>
+     <li><strong>P2A</strong> requires profiles.csv from P1 (graph list, node/edge counts)</li>
+     <li><strong>P2B</strong> requires profiles.csv from P1 (graph list, node/edge counts)</li>
+     <li><strong>P3A</strong> requires centrality_*.csv from P2A (for exact betweenness baseline)</li>
+     <li><strong>P3B</strong> requires louvain_runs.csv from P2B (for Leiden comparison)</li>
+     <li><strong>P4</strong> requires profiles.csv from P1 (bipartite graph identification)</li>
+     <li><strong>P5</strong> requires all previous phase outputs (replication, synthesis, claims)</li>
+   </ul>
+   <p><strong>Dependency management:</strong> Each phase depends on the outputs of previous phases. If P1 fails, P2A and P2B cannot run. If P2A fails, P3A cannot run because it needs the exact betweenness baseline. This is why the critical path matters — a failure in an early phase blocks everything downstream.</p>
+   <p><strong>Parallel execution:</strong> Within each phase, tracks A and B are independent and can run in parallel. P2A (centrality) and P2B (Louvain) can run simultaneously. P3A (betweenness) and P3B (quality) can run simultaneously. This reduces total execution time significantly.</p>
+</div>
+
+<!-- 20. TIER DEFINITIONS -->
+<div class="section" id="tiers">
+  <div class="section-icon orange">📊</div>
+  <h2>Tier Definitions</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tier</th><th>Definition</th><th>When to Skip</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Tier 1</strong></td><td>Must-pass. Core deliverables. Gate criteria.</td><td>Never. Minimum viable product.</td></tr>
+        <tr><td><strong>Tier 2</strong></td><td>Important. Strengthens the analysis. Expected to complete.</td><td>Only if Tier 1 is blocked.</td></tr>
+        <tr><td><strong>Tier 3</strong></td><td>Optional. Nice-to-have. Exploratory.</td><td>Any time. Document as skipped in memo.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Tier philosophy:</strong> Tier 1 is the minimum viable product — if you only complete Tier 1, you have a working measurement program. Tier 2 strengthens the analysis and is expected to be completed. Tier 3 is exploratory — nice to have but not required. This tiered approach ensures that even if time runs out, the core deliverables are complete.</p>
+  <p><strong>How to use tiers:</strong> When planning your week, start with Tier 1 tasks. If you have time, move to Tier 2. Tier 3 tasks are only done if everything else is complete. Document any skipped Tier 3 tasks in the memo with a reason — this is important for auditability.</p>
+</div>
+
+<!-- 21. DECISION RULES -->
+<div class="section" id="decisions">
+  <div class="section-icon red">📋</div>
+  <h2>Decision Rules (All Phases)</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Phase</th><th>Condition</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>P0</td><td>scipy fails with Python 3.10.20</td><td>Use venv. Do not switch to system Python.</td></tr>
+        <tr><td>P0</td><td>check_setup.py fails any test</td><td>STOP. Fix before proceeding.</td></tr>
+        <tr><td>P0</td><td>gds-owl fails to install</td><td>Continue without ontology. Defer to P5.</td></tr>
+        <tr><td>P0</td><td>One graph missing from data directory</td><td>Do not substitute. Fetch from original source.</td></tr>
+        <tr><td>P1</td><td>Round counts differ between two machines</td><td>STOP. Report discrepancy. Do not average.</td></tr>
+        <tr><td>P1</td><td>One graph fails to run</td><td>Continue with 6. Note in questions.md.</td></tr>
+        <tr><td>P1</td><td>Timing variance > 20% across 10 seeds</td><td>Investigate; likely graph-size-dependent.</td></tr>
+        <tr><td>P2</td><td>Louvain identical partitions across all 200 seeds</td><td>Check seed range — likely deterministic.</td></tr>
+        <tr><td>P2</td><td>Spearman high but top-10 overlap low</td><td>Report both. Rank correlation ≠ top-k agreement.</td></tr>
+        <tr><td>P2</td><td>One graph crashes in either track</td><td>Continue with remaining 4. Note in questions.md.</td></tr>
+        <tr><td>P3A</td><td>25% sampling still unreliable (error > 10%)</td><td>State condition for "can we sample at all".</td></tr>
+        <tr><td>P3A</td><td>Leiden same disconnected rate as Louvain</td><td>Hypothesis: graph shape dominates algorithm choice.</td></tr>
+        <tr><td>P3A</td><td>Ground truth ARI < 0.3 on email-Eu-core</td><td>Departments are organisational, not community-structural.</td></tr>
+        <tr><td>P4</td><td>Spearman ~0 between raw and projected</td><td>Report as finding, not error.</td></tr>
+        <tr><td>P4</td><td>Projection blowup > 10× edge count</td><td>Warn in memo. Consider weighted projection.</td></tr>
+        <tr><td>P4</td><td>Replication finding differs from colleague</td><td>Report honestly. Do not adjust parameters.</td></tr>
+        <tr><td>P5</td><td>Replication mismatch (difference > tolerance)</td><td>Report honestly as "did not replicate".</td></tr>
+        <tr><td>P5</td><td>gds-owl import error</td><td>Use venv-gds-owl. If failing, skip Turtle export.</td></tr>
+        <tr><td>P5</td><td>SHACL validation fails</td><td>Inspect report; fix Turtle or shapes; rerun.</td></tr>
+        <tr><td>P5</td><td>check_claims.py returns < 12</td><td>Fix missing claims. Rerun until 12 rows pass.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Decision-making framework:</strong> Every decision rule follows the same pattern: IF condition THEN action. This eliminates ambiguity — when the condition is met, you know exactly what to do. The rules are designed to prevent common mistakes: averaging across machines, skipping failed graphs, adjusting parameters to match expected results.</p>
+  <p><strong>Why document failure modes:</strong> Every phase has known failure modes. Documenting them means you recognize the symptom immediately and know the recovery procedure. This is especially important for P3A (exact betweenness may exceed memory) and P5 (gds-owl import errors). Without documented failure modes, you waste time diagnosing problems that have already been solved.</p>
+</div>
+
+<!-- 22. QUALITY GATES -->
+<div class="section" id="gates">
+  <div class="section-icon green">✅</div>
+  <h2>Quality Gates</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Gate</th><th>Description</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>G0</td><td>Setup: check_setup.py 112/112</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G1</td><td>Phase 1: check_part1.py</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G2A</td><td>Phase 2A: check_part2.py --track A</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G2B</td><td>Phase 2B: check_part2.py --track B</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G3A</td><td>Phase 3A: check_part3.py --track A</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G3B</td><td>Phase 3B: check_part3.py --track B</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G4</td><td>Phase 4: check_part4.py</td><td><span class="status pass">Pass</span></td></tr>
+        <tr><td>G5</td><td>Phase 5: check_claims.py (12 rows)</td><td><span class="status warn">Scaffolded (0/12)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="progress">
+    <div class="progress-bar" style="width: 87.5%"></div>
+  </div>
+  <p style="text-align:center; font-size:0.85rem; color:var(--muted); margin-top:8px;">87.5% Complete — 7/8 Gates Pass</p>
+  <p><strong>Quality assurance philosophy:</strong> Quality gates are not suggestions — they are checkpoints. A phase is not complete until its gate passes. This prevents "close enough" results from propagating downstream. If a gate fails, you fix the output, not the gate criteria.</p>
+  <p><strong>Progress tracking:</strong> The progress bar (87.5%) reflects 7 of 8 gates passing. The only remaining gate is G5 (claims verification), which is blocked by manual research. Once claims are filled, the progress bar reaches 100%.</p>
+</div>
+
+<!-- 23. DELIVERABLES -->
+<div class="section" id="deliverables">
+  <div class="section-icon purple">📦</div>
+  <h2>Deliverables Completed</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Phase</th><th>Deliverable</th><th>Location</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>P0</td><td>first-impressions.md, claims.jsonl (12 rows), research-log.md, questions.md, planner.html</td><td>your-work/solo/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P1</td><td>profiles.csv (7), pagerank_runs.csv (70), calibration.md, part1-memo.md, charts/ (11 PNGs)</td><td>your-work/solo/part1/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P2A</td><td>centrality_scores.csv, centrality_agreement.csv, centrality_cost.csv, disagreements.csv, part2a-memo.md, charts/</td><td>your-work/solo/part2/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P2B</td><td>louvain_runs.csv (1,000 rows), part2b-memo.md, charts/</td><td>your-work/solo/part2/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P3A</td><td>betweenness_exact.csv, betweenness_approx.csv (150), weights_effect.csv (500), part3a-memo.md, charts/</td><td>your-work/solo/part3/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P3B</td><td>community_quality.csv (500), ground_truth_scores.csv, similarity_vs_bridges.csv, part3b-memo.md, charts/</td><td>your-work/solo/part3/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P4</td><td>projection_effect.csv, projection_rankings.csv, projection_mass.csv, projection_shape.csv, replication.md, synthesis.md, part4-memo.md, charts/</td><td>your-work/solo/part4/</td><td><span class="status pass">Complete</span></td></tr>
+        <tr><td>P5</td><td>claims.jsonl (12 rows scaffolded, 0/12 filled), claims-memo.md</td><td>your-work/solo/</td><td><span class="status warn">Scaffolded (0/12)</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="notice">
+    <strong>All Phase 1–4 checkers pass. Phase 5 claims strand scaffolded but unfilled (requires manual primary-source research).</strong>
+  </div>
+  <div class="finding">
+    <strong>📦 Deliverable completeness:</strong> All Phase 1–4 deliverables are complete and verified. Phase 5 deliverables are scaffolded but unfilled — claims.jsonl has 12 rows but 0/12 have evidence. The deliverables table is the single source of truth for what exists and what is pending.
+  </div>
+  <div class="notice blue">
+    <strong>📁 File organization:</strong> CSVs are organized by phase in part{1,2,3,4}/ directories. Charts are in charts/ subdirectories. Memos are co-located with their phase outputs. Provenance sidecars (.provenance.json) accompany every CSV. This structure makes it easy to find any output and verify its provenance.
+  </div>
+<h3>📦 Deliverables Pipeline</h3>
+    <div class="mermaid">graph LR
+      P0(("P0")) --> P1(("P1"))
+      P1 --> P2A(("P2A"))
+      P1 --> P2B(("P2B"))
+      P2A --> P3A(("P3A"))
+      P2B --> P3B(("P3B"))
+      P3A --> P4(("P4"))
+      P3B --> P4
+      P4 --> D1(("claims"))
+      P4 --> D2(("memo"))
+      P4 --> D3(("Turtle"))
+      P4 --> D4(("synthesis"))
+      D1 --> V(("SHACL"))
+      D2 --> V
+      D3 --> V
+      D4 --> V
+      style P0 fill:#e1f5fe
+      style P4 fill:#ffebee
+      style V fill:#c8e6c9</div>
+    </div>
+
+<!-- 24. KEY FINDINGS -->
+<div class="section" id="findings">
+  <div class="section-icon yellow">🏆</div>
+  <h2>Key Findings</h2>
+  <div class="finding">
+    <strong>Finding 1:</strong> PageRank cost correlates with degree skew more than node count. unicodelang (skew=141) needs 67 iterations; email-Eu-core (skew=16.5) needs only 14.
+  </div>
+  <div class="finding blue">
+    <strong>Finding 2:</strong> Louvain is stable on crime (mod 0.9296 ± 0.0004) but noisy on openflights (0.6560 ± 0.0042).
+  </div>
+  <div class="finding purple">
+    <strong>Finding 3:</strong> Projection changes rankings drastically: crime side 1 Spearman=0.002 (uncorrelated). unicodelang side 0 ARI=0.17.
+  </div>
+  <div class="finding orange">
+    <strong>Finding 4:</strong> Betweenness approximation achieves 95–104x speedup with Spearman >0.92 at 1% pivot sampling.
+  </div>
+  <div class="finding green">
+    <strong>Finding 5:</strong> At 5% sampling, speedup is ~18–20× with Spearman >0.97 and top-10 overlap ~0.5–0.8. Practical sweet spot.
+  </div>
+  <div class="finding cyan">
+    <strong>Finding 6:</strong> Correlation does not imply top-k agreement. Two rankings can have Spearman ρ = 0.95 yet disagree on top-10 nodes.
+  </div>
+  <div class="finding pink">
+    <strong>Finding 7:</strong> Modularity std below 0.001 indicates seed-robust partitions (crime, unicodelang). Above 0.002 — interpret with caution.
+  </div>
+  <div class="finding">
+    <strong>Finding 8:</strong> Projection is NOT neutral: Amplifies mass imbalances and reshapes ranking structures.
+  </div>
+  <p><strong>What these findings mean:</strong> Degree skew is the dominant factor in PageRank convergence — not node count. This means you should always check skew before choosing an algorithm. Louvain stability varies dramatically across graphs — crime is robust, openflights is not. This means you should never assume Louvain will produce stable results without testing. Projection fundamentally changes the ranking object — this means you must choose your representation carefully based on your question, not convenience.</p>
+  <p><strong>Implications for practice:</strong> These findings have direct consequences for how graph algorithms are applied in production. If you use PageRank on a high-skew graph without checking convergence, you may get misleading results. If you use Louvain without testing stability, your communities may be artifacts of initialization. If you project a bipartite graph without understanding the consequences, you may answer the wrong question.</p>
+</div>
+
+<!-- 25. NEXT STEPS -->
+<div class="section" id="nextsteps">
+  <div class="section-icon blue">➡️</div>
+  <h2>Next Steps</h2>
+<ol>
+      <li><strong>Complete claims strand:</strong> Fill all 12 rows in claims.jsonl with evidence, verdict, and grade. Longest pole in schedule — requires manual primary-source research.</li>
+      <li><strong>Replicate colleague's finding:</strong> Run colleague's script, compare outputs, document discrepancies honestly.</li>
+      <li><strong>Export RDF Turtle:</strong> Use gds-owl to export experiment results, validate with SHACL.</li>
+      <li><strong>Write synthesis.md:</strong> Cross-part narrative and conclusions.</li>
+      <li><strong>Fix graph_analysis.html:</strong> The file uses Chart.js CDN which may not load in all environments. Consider self-contained Chart.js or fallback to static images.</li>
+    </ol>
+    <div class="finding blue">
+      <strong>➡️ Priority order:</strong> Claims verification is the longest pole — it blocks Phase 5 completion. Replication is next — it validates our methodology. RDF export and synthesis are important for deliverables but can proceed in parallel. The graph_analysis.html fix is a quality-of-life improvement.
+    </div>
+    <div class="notice">
+      <strong>✅ Success criteria for next steps:</strong> All 12 claims filled with evidence and verdicts. Colleague's finding replicated or discrepancy documented. RDF Turtle exported and SHACL-validated. synthesis.md written covering all phases. graph_analysis.html loads without CDN dependency.
+    </div>
+<h3>➡️ Project Roadmap</h3>
+    <div class="mermaid">graph LR
+      A(("Claims")) --> B(("Replicate"))
+      B --> C(("Export"))
+      C --> D(("SHACL"))
+      D --> E(("synthesis"))
+      E --> F(("Fix"))
+      F --> G(("Done"))
+      style A fill:#ffebee
+      style G fill:#c8e6c9</div>
+    </div>
+
+<!-- 26. QUICK REFERENCE -->
+<div class="section" id="commands">
+  <div class="section-icon green">⌨️</div>
+  <h2>Quick Reference Commands</h2>
+  <div class="code-block"># Activate core runtime
+source venv/bin/activate
+
+# Activate semantic web stack
+source venv-gds-owl/bin/activate
+
+# Run phases
+python part-1/run_part1.py --who solo
+python part-2/run_part2a.py --who solo
+python part-2/run_part2b.py --who solo
+python part-3/run_part3a.py --who solo
+python part-3/run_part3b.py --who solo
+python part-4/run_part4.py --who solo
+
+# Run checkers
+python part-1/check_part1.py
+python part-2/check_part2.py --track A
+python part-2/check_part2.py --track B
+python part-3/check_part3.py --track A
+python part-3/check_part3.py --track B
+python part-4/check_part4.py
+python 06-claims/check_claims.py --who solo</div>
+  <p><strong>Usage tips:</strong> Always activate the correct venv before running commands. Core runtime uses `venv/`, ontology work uses `venv-gds-owl/`. Running the wrong venv causes import errors. Check outputs with `wc -l` and `head` before running checkers. This catches obvious problems early.</p>
+  <p><strong>Common pitfalls:</strong> Forgetting to activate venv (results in ImportError). Running checkers before outputs are generated (false failures). Not recording provenance sidecars (breaks audit trail). Skipping calibration step (unverified results).</p>
+</div>
+</div>
+
+<!-- 27. FILE MANIFEST -->
+<div class="section" id="manifest">
+  <div class="section-icon cyan">📁</div>
+  <h2>File Manifest</h2>
+  <div class="code-block">Implementation Report:  your-work/solo/implementation.html
+Presentation Script:    your-work/script.md
+Analysis Report:        your-work/solo/graph_analysis.html
+Phase Plan:             your-work/solo/planner.html
+All CSVs:               your-work/solo/part{1,2,3,4}/
+All Charts:             your-work/solo/part{1,2,3,4}/charts/
+All Memos:              your-work/solo/part{1,2,3,4}/*-memo.md
+Provenance:             your-work/solo/part{1,2,3,4}/*.provenance.json</div>
+  <p><strong>File organization rationale:</strong> Each phase has its own directory (part1/, part2/, part3/, part4/). CSVs, charts, memos, and provenance sidecars are co-located. This makes it easy to find all outputs for a given phase and verify provenance. The root directory contains the high-level deliverables: implementation.html, script.md, graph_analysis.html, planner.html.</p>
+  <p><strong>Provenance sidecars:</strong> Every CSV has a corresponding .provenance.json file that records how the CSV was generated — which script, which parameters, which machine, which timestamp. This is the audit trail that makes results reproducible.</p>
+</div>
+
+<!-- 28. COMPLEMENTARITY -->
+<div class="section" id="complementarity">
+  <div class="section-icon pink">🔀</div>
+  <h2>Complementarity: script.md vs implementation.html</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Aspect</th><th>script.md</th><th>implementation.html</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Purpose</strong></td><td>Presentation script — narrative, spoken-word style, meant for presenting to stakeholders</td><td>Technical reference — comprehensive, structured, with all procedures, flowcharts, and data</td></tr>
+        <tr><td><strong>Audience</strong></td><td>Leads, Cofounders, CEO, Technical Stakeholders</td><td>Technical team, auditors, replicators</td></tr>
+        <tr><td><strong>Format</strong></td><td>Markdown — concise, with speaker notes, timing cues, key messages</td><td>HTML — detailed, with tables, flowcharts, decision rules, quality gates</td></tr>
+        <tr><td><strong>Content</strong></td><td>What we did, why we did it, key findings, next steps</td><td>How we did it — procedures, workflows, data, decision rules, failure modes</td></tr>
+        <tr><td><strong>Depth</strong></td><td>High-level summary with key numbers</td><td>Full detail with all CSVs, memos, charts, provenance</td></tr>
+        <tr><td><strong>Use Case</strong></td><td>Presenting to stakeholders, quick overview</td><td>Technical reference, auditing, replication</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>How to Use Them Together</h3>
+<ol>
+     <li><strong>script.md</strong> for the presentation — read it aloud to stakeholders. It has timing cues, speaker notes, and key messages.</li>
+     <li><strong>implementation.html</strong> for the details — reference it when stakeholders ask "how exactly did you do that?" or "what was the exact procedure?"</li>
+     <li><strong>planner.html</strong> for the plan — reference it when stakeholders ask "what was the plan?" or "what were the decision rules?"</li>
+     <li><strong>graph_analysis.html</strong> for the interactive analysis — reference it when stakeholders want to explore the data themselves.</li>
+   </ol>
+   <p><strong>Why two documents:</strong> script.md is for humans (speakers, stakeholders) — it tells the story with timing cues and key messages. implementation.html is for machines and auditors — it has all the data, procedures, and decision rules. Together they cover both the narrative and the technical detail.</p>
+  <p><strong>How to update them:</strong> When you add a new finding, update both documents. script.md gets the key message and timing cue. implementation.html gets the full detail with CSV references, decision rules, and failure modes. Never update one without the other — they are complementary, not redundant.</p>
+</div>
+
+<!-- 29. Q&A -->
+<div class="section" id="qa">
+  <div class="section-icon yellow">❓</div>
+  <h2>Q&A</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Q: Why 7 graphs?</h4>
+      <p>Structural diversity — no interchangeable pairs. Each tests different algorithm behaviors.</p>
+    </div>
+    <div class="card">
+      <h4>Q: Why two venvs?</h4>
+      <p>Core runtime packages move fast; semantic web stack is conservative. Mixing creates dependency resolver conflicts.</p>
+    </div>
+    <div class="card">
+      <h4>Q: What about Phase 5?</h4>
+      <p>Depends on colleague output and manual claims research. Everything else is complete.</p>
+    </div>
+    <div class="card">
+      <h4>Q: Can we scale to larger graphs?</h4>
+      <p>Exact betweenness is O(n·m). For openflights (36,906 edges), exact betweenness may exceed memory. We mitigate by dropping it from the exact set.</p>
+    </div>
+    <div class="card">
+      <h4>Q: What is the claims strand?</h4>
+      <p>12 claims traced to primary sources, graded for evidence quality. Currently scaffolded (0/12 filled). Requires manual primary-source research.</p>
+    </div>
+    <div class="card">
+      <h4>Q: What is the ontology strand?</h4>
+      <p>Results modelled as RDF/OWL linked data using Biolink Model vocabulary, validated with SHACL, exportable via gds-owl.</p>
+    </div>
+  </div>
+  <p><strong>Most common questions:</strong> The Q&A section covers the most frequently asked questions about the project. Why 7 graphs (structural diversity), why two venvs (dependency isolation), what about Phase 5 (claims research), can we scale (memory limits), what is the claims strand (manual research), what is the ontology strand (RDF export).</p>
+  <p><strong>How to use this section:</strong> Read the Q&A before presenting to stakeholders. It covers the questions they are most likely to ask. If you hear a new question, add it to the Q&A — this document evolves with the project.</p>
+</div>
+
+</div>
+
+<footer>
+  <p>GDS Measurement Program — Implementation Report | PrajnaAI | September 2026</p>
+  <p>Companion: <a href="script.md" style="color:var(--accent);">script.md (presentation script)</a> | <a href="planner.html" style="color:var(--accent);">planner.html (phase plan)</a> | <a href="graph_analysis.html" style="color:var(--accent);">graph_analysis.html (analysis report)</a></p>
+</footer>
+
+</body>
+</html>

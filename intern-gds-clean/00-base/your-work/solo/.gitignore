@@ -1,0 +1,28 @@
+# Virtual environments
+venv/
+venv-gds-owl/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# macOS system files
+__MACOSX/
+.DS_Store
+*.DS_Store
+
+# Large ontology files (can be downloaded separately)
+life_science_corpus/ontology/chebi.owl
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Export artifacts (keep in repo, exclude from archive if needed)
+export_rdf.py
+shapes.ttl
+shacl_report.md

@@ -1,0 +1,21 @@
+# Everything this pack needs. All of these install from prebuilt wheels on
+# Windows, macOS (Intel and Apple Silicon) and Linux - you do not need a C
+# compiler, and nothing here has to be built from source.
+#
+# Ranges rather than exact pins, deliberately: an exact pin of the newest
+# networkx would refuse to install on Python 3.10 and you would be stuck on day
+# one. Instead, check_setup.py prints the versions you actually got, and every
+# results file records them - so if two machines ever disagree, you can see why.
+#
+# Verified working on the reference machine:
+#   Python 3.13.4, networkx 3.6.1, igraph 1.0.0, leidenalg 0.12.0,
+#   numpy 2.2.6, scipy 1.18.0, pandas 2.3.0, matplotlib 3.11.0
+
+networkx>=3.2,<4
+igraph>=0.11,<2
+leidenalg>=0.10,<1
+numpy>=1.24
+scipy>=1.10
+pandas>=2.0
+matplotlib>=3.7
+pytest>=7.0

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Data Science Measurement Program</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #475569;
+      --line: #dfe7f2;
+      --brand: #2563eb;
+      --brand-2: #7c3aed;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #dc2626;
+      --cyan: #0f766e;
+      --purple: #7c3aed;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-amber: #fff7ed;
+      --soft-red: #fef2f2;
+      --code-bg: #0f172a;
+      --code-fg: #e2e8f0;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #eef4ff 0%, #f8fafc 100%);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.75;
+    }
+
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1, h2, h3, h4 { margin-top: 0; }
+    ul, ol { padding-left: 1.2rem; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: white;
+      border-radius: 24px;
+      padding: 38px 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.4rem, 4vw, 3.5rem);
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 980px;
+      font-size: 1.08rem;
+    }
+
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .topnav a {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    section {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 26px 22px 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 2vw, 2.3rem);
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .subhead { color: var(--muted); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .metric {
+      background: linear-gradient(135deg, #eff6ff, #eef2ff);
+      border: 1px solid #c7d2fe;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.8rem;
+      line-height: 1.2;
+      color: var(--brand);
+      margin-bottom: 4px;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0f766e;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .phase-box {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .phase-box h3 {
+      margin-bottom: 8px;
+      color: var(--brand);
+      font-size: 1.2rem;
+    }
+
+    .phase-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .callout {
+      background: var(--soft-blue);
+      border-left: 5px solid var(--brand);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      font-weight: 600;
+    }
+    .callout.green { background: var(--soft-green); border-left-color: var(--green); }
+    .callout.amber { background: var(--soft-amber); border-left-color: var(--amber); }
+    .callout.red { background: var(--soft-red); border-left-color: var(--red); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+    }
+    th {
+      background: #f1f5f9;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .flow-chart {
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+
+    .codebox {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .compact-list {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>Graph Data Science Measurement Program</h1>
+      <p>
+        This project is not just a collection of graph algorithms. It is a measurement workflow that studies how graph algorithms behave on real networks, why results differ by graph topology, how expensive each method is, and whether the representation of the graph changes the answer.
+      </p>
+    </div>
+
+    <div class="topnav">
+      <a href="#overview">Overview</a>
+      <a href="#why">Why each part</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#graphs">7 graphs</a>
+      <a href="#findings">19 figures</a>
+      <a href="#phases">Phases</a>
+      <a href="#algorithms">Algorithms</a>
+      <a href="#profile">Profiling</a>
+      <a href="#files">Files to read</a>
+      <a href="#final">Final takeaway</a>
+    </div>
+
+    <section id="overview">
+      <h2 class="section-title">1. What is this project really about?</h2>
+      <div class="two-col">
+        <div>
+          <p>
+            This project is about studying graphs as data objects. A graph is a way to represent entities and relationships. In real life, these graphs appear in social networks, communication systems, transportation routes, co-authorship networks, crime patterns, language associations, and more.
+          </p>
+          <p>
+            The project asks a deeper question: if we run different graph algorithms on different kinds of graphs, do they behave the same way? Do they cost the same amount of computation? Are they stable across repeated runs? Do different graph representations change the result?
+          </p>
+          <p>
+            In other words, it treats graph analysis as a measurement discipline, not just a demo of attractive algorithms. The focus is on evidence, comparison, reproducibility, and interpretation.
+          </p>
+        </div>
+        <div class="mini-grid">
+          <div class="metric">
+            <strong>7</strong>
+            real graph datasets
+          </div>
+          <div class="metric">
+            <strong>19</strong>
+            figures / charts produced
+          </div>
+          <div class="metric">
+            <strong>1,220</strong>
+            repeated benchmark runs
+          </div>
+          <div class="metric">
+            <strong>8</strong>
+            project phases / gates
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        The main idea is simple: “The answer depends on the graph and the method.” A result is only useful if it is measured, checked, and explained.
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">2. Why are we performing this project?</h2>
+      <div class="mini-grid">
+        <div class="card">
+          <h3>Goal</h3>
+          <p>Understand how graph algorithms behave on different graph topologies and under different representations.</p>
+        </div>
+        <div class="card">
+          <h3>Aim</h3>
+          <p>Move beyond “the algorithm works” to “the algorithm works under which conditions, and how reliable is it?”</p>
+        </div>
+        <div class="card">
+          <h3>Real-world use</h3>
+          <p>Influence analysis, fraud detection, transport planning, recommendation systems, community segmentation, and infrastructure vulnerability analysis.</p>
+        </div>
+        <div class="card">
+          <h3>Deliverable</h3>
+          <p>Evidence-based benchmark outputs, graph profiles, algorithm comparisons, stability checks, and final claims backed by data.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2 class="section-title">3. High-level architecture and flow from script.md</h2>
+      <div class="flow-chart">
+        <pre class="mermaid">
+flowchart LR
+    P0["P0 Setup"] --> P1["P1 Profile"]
+    P1 --> P2A["P2A Centrality"]
+    P1 --> P2B["P2B Louvain"]
+    P2A --> P3A["P3A Betweenness"]
+    P2B --> P3B["P3B Community quality"]
+    P3A --> P4["P4 Projection"]
+    P3B --> P4
+    P4 --> P5["P5 Claims, RDF and synthesis"]
+        </pre>
+      </div>
+
+      <div class="callout green">
+        This is the actual project structure: setup → profile → analyze influence and communities → test approximation and quality → check representation effects → summarize as claims and evidence.
+      </div>
+    </section>
+
+    <section id="why">
+      <h2 class="section-title">4. Why each part exists: goal, purpose, and deliverables</h2>
+
+      <div class="phase-box">
+        <div class="phase-meta">P0 — Setup and scaffold</div>
+        <h3>Why we do it</h3>
+        <p>To make the benchmark trustworthy before any serious analytical claim is made.</p>
+        <p><strong>Goal:</strong> verify the environment, dependencies, graph files, setup checks, and output directories.</p>
+        <p><strong>Deliverables:</strong> setup files, checks, research logs, claims scaffold, provenance data.</p>
+        <p><strong>Key files:</strong> <a href="../00-base/START_HERE.md">00-base/START_HERE.md</a>, <a href="../00-base/02-setup/SETUP.md">00-base/02-setup/SETUP.md</a>, <a href="../00-base/your-work/solo/claims.jsonl">00-base/your-work/solo/claims.jsonl</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P1 — Profiling and calibration</div>
+        <h3>Why we do it</h3>
+        <p>Because structural features like degree skew, density, and connectivity explain runtime and behavior. We need to understand the graph before using expensive algorithms.</p>
+        <p><strong>Goal:</strong> build the baseline profile, understand graph shape, and calibrate PageRank behavior.</p>
+        <p><strong>Deliverables:</strong> profile statistics, PageRank runs, calibration memos, PNG charts.</p>
+        <p><strong>Key files:</strong> <a href="../part-1/run_part1.py">part-1/run_part1.py</a>, <a href="../part-1/BRIEF.md">part-1/BRIEF.md</a>, <a href="../part-1/EXPECTED_OUTPUT.md">part-1/EXPECTED_OUTPUT.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P2A — Centrality agreement</div>
+        <h3>Why we do it</h3>
+        <p>Different measures of importance can rank nodes differently. A node may be highly connected but not the best bridge.</p>
+        <p><strong>Goal:</strong> compare degree, PageRank, closeness, and betweenness to see when “important” truly means different things.</p>
+        <p><strong>Deliverables:</strong> centrality score tables, agreement reports, top-k disagreements, performance memos.</p>
+        <p><strong>Key files:</strong> <a href="../part-2/run_part2a.py">part-2/run_part2a.py</a>, <a href="../part-2/BRIEF-A.md">part-2/BRIEF-A.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P2B — Louvain stability</div>
+        <h3>Why we do it</h3>
+        <p>A single partition with high modularity may still be unstable. Random flavor can produce different community structures.</p>
+        <p><strong>Goal:</strong> test whether community detection is consistent and trustworthy.</p>
+        <p><strong>Deliverables:</strong> repeated Louvain runs, modularity summaries, ARI comparisons, stability notes.</p>
+        <p><strong>Key files:</strong> <a href="../part-2/run_part2b.py">part-2/run_part2b.py</a>, <a href="../part-2/BRIEF-B.md">part-2/BRIEF-B.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P3A — Approximation and betweenness</div>
+        <h3>Why we do it</h3>
+        <p>Exact algorithms can be expensive, so we measure whether a sampled approximation is good enough.</p>
+        <p><strong>Goal:</strong> balance speed and accuracy for expensive graph analytics.</p>
+        <p><strong>Deliverables:</strong> exact vs sampled results, speedup metrics, ranked fidelity comparisons.</p>
+        <p><strong>Key files:</strong> <a href="../part-3/run_part3a.py">part-3/run_part3a.py</a>, <a href="../part-3/BRIEF-A.md">part-3/BRIEF-A.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P3B — Community quality and consistency</div>
+        <h3>Why we do it</h3>
+        <p>Modularity alone does not guarantee useful communities. We also check disconnectedness, fragility, and comparison to labels.</p>
+        <p><strong>Goal:</strong> judge whether the community structure is meaningful rather than just high-scoring.</p>
+        <p><strong>Deliverables:</strong> quality audits, connectivity checks, comparison results, practical interpretation.</p>
+        <p><strong>Key files:</strong> <a href="../part-3/run_part3b.py">part-3/run_part3b.py</a>, <a href="../part-3/BRIEF-B.md">part-3/BRIEF-B.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P4 — Projection and representation effects</div>
+        <h3>Why we do it</h3>
+        <p>Getting a graph into a different form can change the question and distort the result. This is especially important for bipartite or two-mode networks.</p>
+        <p><strong>Goal:</strong> test whether projection changes rankings, structure, and conclusions.</p>
+        <p><strong>Deliverables:</strong> projected graph analyses, score comparisons, output memos.</p>
+        <p><strong>Key files:</strong> <a href="../part-4/run_part4.py">part-4/run_part4.py</a>, <a href="../part-4/BRIEF.md">part-4/BRIEF.md</a></p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">P5 — Claims, RDF and synthesis</div>
+        <h3>Why we do it</h3>
+        <p>To turn evidence into reusable, checkable knowledge and make the findings interoperable and auditable.</p>
+        <p><strong>Goal:</strong> convert measured results into claims, structured metadata, and final interpretation.</p>
+        <p><strong>Deliverables:</strong> claims files, RDF/semantic outputs, synthesis and final review notes.</p>
+        <p><strong>Key files:</strong> <a href="../00-base/your-work/solo/claims-memo.md">00-base/your-work/solo/claims-memo.md</a>, <a href="../00-base/your-work/solo/gds-workflow.html">00-base/your-work/solo/gds-workflow.html</a></p>
+      </div>
+    </section>
+
+    <section id="graphs">
+      <h2 class="section-title">5. Why do we have 7 graphs?</h2>
+      <p class="subhead">Because the project intentionally tests many graph topologies, not just one convenient dataset.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Graph</th>
+            <th>Nodes</th>
+            <th>Edges</th>
+            <th>Role in the benchmark</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>G1</td><td>lesmis</td><td>77</td><td>254</td><td>Small weighted baseline</td></tr>
+          <tr><td>G2</td><td>unicodelang</td><td>868</td><td>1,255</td><td>Extreme degree skew and bipartite structure</td></tr>
+          <tr><td>G3</td><td>crime</td><td>1,380</td><td>1,476</td><td>Bipartite offender–crime projection test</td></tr>
+          <tr><td>G4</td><td>email-Eu-core</td><td>986</td><td>24,929</td><td>Directed communication graph with labels</td></tr>
+          <tr><td>G5</td><td>openflights</td><td>3,214</td><td>36,906</td><td>Directed weighted transport-cost network</td></tr>
+          <tr><td>G6</td><td>facebook_combined</td><td>4,039</td><td>88,234</td><td>Large sparse social graph</td></tr>
+          <tr><td>G7</td><td>ca-GrQc</td><td>5,241</td><td>14,484</td><td>Fragmented collaboration network</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout amber">
+        These graphs are the input layer. The 19 figures are the visual output layer generated from those inputs. They are related but not the same thing.
+      </div>
+    </section>
+
+    <section id="findings">
+      <h2 class="section-title">6. How did the 19 figures come from the workflow?</h2>
+      <p>
+        The project creates many plots, not random charts. Every figure is tied to a measurement objective. The 19 figures are the output of the measurements, not a separate dataset collection.
+      </p>
+      <div class="mini-grid">
+        <div class="card">
+          <h3>Profiling / calibration</h3>
+          <p>11 figures from degree distributions, PageRank behavior, and structural summaries.</p>
+        </div>
+        <div class="card">
+          <h3>Centrality / Louvain</h3>
+          <p>2 figures for agreement and modularity stability signals.</p>
+        </div>
+        <div class="card">
+          <h3>Approximation</h3>
+          <p>3 figures for speedup, quality loss, and cost trade-off.</p>
+        </div>
+        <div class="card">
+          <h3>Projection</h3>
+          <p>3 figures for representation-effects and score change analysis.</p>
+        </div>
+      </div>
+      <div class="callout green">
+        11 + 2 + 3 + 3 = 19. That is the exact mapping between the project pipeline and the visual evidence.
+      </div>
+    </section>
+
+    <section id="phases">
+      <h2 class="section-title">7. The phase-by-phase explanation from script.md</h2>
+      <div class="flow-chart">
+        <pre class="mermaid">
+flowchart TD
+    Q["Question"] --> S["Structure check"]
+    S --> M["Measure algorithm"]
+    M --> V["Variance / stability"]
+    V --> A["Compare metrics"]
+    A --> R["Representation check"]
+    R --> C["Conclusion + claim"]
+        </pre>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 0</div>
+        <h3>Setup and controlled environment</h3>
+        <p><strong>What happens:</strong> verify Python, packages, graph files, checksums, and output structure.</p>
+        <p><strong>Why it matters:</strong> invalid data or environment makes every later metric unreliable.</p>
+        <p><strong>Deliverables:</strong> working environment, valid files, stable benchmark scaffold.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 1</div>
+        <h3>Profile and calibrate</h3>
+        <p><strong>What happens:</strong> compute graph size, density, degree distribution, components, clustering, and PageRank convergence patterns.</p>
+        <p><strong>Why it matters:</strong> topological properties explain runtime and algorithmic sensitivity.</p>
+        <p><strong>Deliverables:</strong> profile tables and PageRank result sets.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 2A</div>
+        <h3>Centrality agreement</h3>
+        <p><strong>What happens:</strong> compare degree centrality, PageRank, closeness, and betweenness.</p>
+        <p><strong>Why it matters:</strong> different centrality metrics capture different notions of “importance.”</p>
+        <p><strong>Deliverables:</strong> agreement scores, disagreement lists, rank comparisons.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 2B</div>
+        <h3>Louvain stability</h3>
+        <p><strong>What happens:</strong> run Louvain repeatedly with different seeds, then compare partitions.</p>
+        <p><strong>Why it matters:</strong> community quality is not only about modularity; it is about consistent structure.</p>
+        <p><strong>Deliverables:</strong> modularity, ARI, seed variability, partition summaries.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 3A</div>
+        <h3>Approximation trade-off</h3>
+        <p><strong>What happens:</strong> sample betweenness and compare it with exact computation.</p>
+        <p><strong>Why it matters:</strong> expensive methods may still be useful if approximate versions remain faithful enough.</p>
+        <p><strong>Deliverables:</strong> speedup curves and quality-vs-cost trade-offs.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 3B</div>
+        <h3>Community quality audit</h3>
+        <p><strong>What happens:</strong> test connectivity, stability, and label agreement for community detection.</p>
+        <p><strong>Why it matters:</strong> an algorithm can look good but still produce fragile or disconnected clusters.</p>
+        <p><strong>Deliverables:</strong> quality reports, fragility measures, comparison memos.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 4</div>
+        <h3>Projection and representation check</h3>
+        <p><strong>What happens:</strong> transform bipartite graphs into projected networks and compare the result.</p>
+        <p><strong>Why it matters:</strong> the projection can change the ranking or interpretation significantly.</p>
+        <p><strong>Deliverables:</strong> representation-effect tables and summary conclusions.</p>
+      </div>
+
+      <div class="phase-box">
+        <div class="phase-meta">Phase 5</div>
+        <h3>Claims and RDF synthesis</h3>
+        <p><strong>What happens:</strong> convert evidence into structured claims and semantic output.</p>
+        <p><strong>Why it matters:</strong> a benchmark is more useful when it can be checked and reused.</p>
+        <p><strong>Deliverables:</strong> evidence-backed claims, RDF export, final synthesis.</p>
+      </div>
+    </section>
+
+    <section id="algorithms">
+      <h2 class="section-title">8. Which GDS algorithms are used and why?</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Algorithm / measure</th>
+            <th>Used for</th>
+            <th>Phase</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>PageRank</td><td>node importance / influence</td><td>P1, P2A</td><td>Captures endorsement and rank stability under graph structure.</td></tr>
+          <tr><td>Degree centrality</td><td>local importance</td><td>P2A</td><td>Simple and fast baseline for number of neighbors.</td></tr>
+          <tr><td>Closeness centrality</td><td>reachability</td><td>P2A</td><td>Measures how quickly a node can access others.</td></tr>
+          <tr><td>Betweenness centrality</td><td>broker / bridge detection</td><td>P2A, P3A</td><td>High-cost but useful when path control matters.</td></tr>
+          <tr><td>Louvain community detection</td><td>community discovery</td><td>P2B, P3B</td><td>Finds clusters and exposes stability issues.</td></tr>
+          <tr><td>Modularity</td><td>partition quality</td><td>P2B, P3B</td><td>Measures how strong the community structure is.</td></tr>
+          <tr><td>ARI / overlap measures</td><td>agreement between partitions</td><td>P2B, P3B</td><td>Shows whether different runs agree on the same communities.</td></tr>
+          <tr><td>Projection / reduction</td><td>representation change</td><td>P4</td><td>Tests whether a transformed graph changes the answer.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="profile">
+      <h2 class="section-title">9. How is profiling done?</h2>
+      <p>
+        Profiling is not just measuring whether a run is slow. It captures both structure and repeated algorithm behavior. For each graph, the workflow computes statistics like node and edge counts, density, skew, connected components, clustering coefficient, and repeated PageRank results.
+      </p>
+
+      <div class="codebox">for graph in graphs:
+    G = load_graph(graph)
+    metrics = {
+        "nodes": G.number_of_nodes(),
+        "edges": G.number_of_edges(),
+        "density": nx.density(G),
+        "components": nx.number_connected_components(G),
+        "degree_skew": compute_skew(G),
+        "clustering": compute_clustering(G),
+    }
+    pagerank_runs = run_pagerank(G, seeds=10)
+    save_row(metrics, pagerank_runs)
+</div>
+
+      <p>
+        This is important because it shows that the project asks not only “what is the output,” but also “what is the graph doing to the algorithm?” That is why degree skew, graph size, connectivity, and density matter.
+      </p>
+
+      <div class="callout">
+        Size alone is not enough. A small graph with extreme skew can be much harder for an algorithm than a larger but more regular graph.
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">10. Did we get the expected outcome?</h2>
+      <p>Yes, the expected outcome is consistent with the project’s design.</p>
+      <ul>
+        <li>Different algorithms disagree on which nodes are most important.</li>
+        <li>Graph structure changes runtime and convergence behavior.</li>
+        <li>Community detection can be strong but still unstable across runs.</li>
+        <li>Approximation can be much faster while preserving enough fidelity.</li>
+        <li>Projection can change the answer even when the underlying data does not.</li>
+      </ul>
+      <p>The project therefore supports the important practical conclusion: no single algorithm is universally best; the answer depends on the graph, the measure, and the use-case context.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">11. Technologies used and why they matter</h2>
+      <div class="mini-grid">
+        <div class="card">
+          <h3>Python</h3>
+          <p>Primary execution environment for graph analysis and workflow orchestration.</p>
+        </div>
+        <div class="card">
+          <h3>NetworkX</h3>
+          <p>Graph storage, algorithms, and real network analysis toolkit.</p>
+        </div>
+        <div class="card">
+          <h3>NumPy / pandas</h3>
+          <p>Used for metrics, aggregation, and tabular analysis.</p>
+        </div>
+        <div class="card">
+          <h3>Matplotlib</h3>
+          <p>Generates the visual evidence and the project charts.</p>
+        </div>
+        <div class="card">
+          <h3>rdflib / SHACL</h3>
+          <p>Used for structured metadata, evidence export, and semantic validation.</p>
+        </div>
+        <div class="card">
+          <h3>Provenance tracking</h3>
+          <p>Records environment, seeds, and input state so results remain reproducible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="files">
+      <h2 class="section-title">12. Files and scripts to read while explaining the phases</h2>
+      <ul>
+        <li><a href="../script.md">script.md</a> — spoken project narrative and flow</li>
+        <li><a href="../00-base/START_HERE.md">00-base/START_HERE.md</a> — overall project orientation</li>
+        <li><a href="../00-base/01-context/how-we-work.md">00-base/01-context/how-we-work.md</a> — methodology and working style</li>
+        <li><a href="../00-base/01-context/graphs-from-zero.md">00-base/01-context/graphs-from-zero.md</a> — graph basics</li>
+        <li><a href="../00-base/your-work/solo/gds-workflow.html">00-base/your-work/solo/gds-workflow.html</a> — technical system workflow</li>
+        <li><a href="../00-base/your-work/solo/graph_analysis.html">00-base/your-work/solo/graph_analysis.html</a> — visual analytics report</li>
+        <li><a href="../part-1/run_part1.py">part-1/run_part1.py</a> — profiling and calibration logic</li>
+        <li><a href="../part-2/run_part2a.py">part-2/run_part2a.py</a> — centrality analysis</li>
+        <li><a href="../part-2/run_part2b.py">part-2/run_part2b.py</a> — Louvain stability</li>
+        <li><a href="../part-3/run_part3a.py">part-3/run_part3a.py</a> — betweenness approximation</li>
+        <li><a href="../part-3/run_part3b.py">part-3/run_part3b.py</a> — community quality checks</li>
+        <li><a href="../part-4/run_part4.py">part-4/run_part4.py</a> — representation / projection analysis</li>
+        <li><a href="../00-base/your-work/solo/claims.jsonl">00-base/your-work/solo/claims.jsonl</a> — evidence and claims record</li>
+      </ul>
+    </section>
+
+    <section id="final">
+      <h2 class="section-title">13. Final takeaway</h2>
+      <div class="callout">
+        This project is a complete graph-analysis workflow: it profiles the graph, measures algorithm behavior, tests stability, checks approximation quality, tests representation effects, and converts evidence into claims.
+      </div>
+      <p>
+        The 7 graphs give diversity; the 19 figures give visual evidence; the phases give the logic; and the scripts provide the operational truth. The real lesson is not that one algorithm is always best. The real lesson is that graph analysis is only trustworthy when it is grounded in topology, cost, stability, and interpretation.
+      </p>
+      <p>
+        So yes: the 7 graphs and 19 figures are directly related. The graphs are the input layer and the figures are the output layer, both generated by the same systematic measurement pipeline.
+      </p>
+    </section>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+</body>
+</html>

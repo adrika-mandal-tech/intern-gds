@@ -1,0 +1,35 @@
+@prefix gds: <https://prajna.ai/intern-gds/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://prajna.ai/intern-gds/projection_effect/0> a gds:ProjectionResult ;
+    gds:ari 5.688e-01 ;
+    gds:graphName "crime" ;
+    gds:nEntities 829 ;
+    gds:side "0" ;
+    gds:spearman 2.264e-01 ;
+    gds:top10Overlap 3.333e-01 .
+
+<https://prajna.ai/intern-gds/projection_effect/1> a gds:ProjectionResult ;
+    gds:ari 5.751e-01 ;
+    gds:graphName "crime" ;
+    gds:nEntities 551 ;
+    gds:side "1" ;
+    gds:spearman 2e-03 ;
+    gds:top10Overlap 1.765e-01 .
+
+<https://prajna.ai/intern-gds/projection_effect/2> a gds:ProjectionResult ;
+    gds:ari 1.702e-01 ;
+    gds:graphName "unicodelang" ;
+    gds:nEntities 254 ;
+    gds:side "0" ;
+    gds:spearman 3.069e-01 ;
+    gds:top10Overlap 1.111e-01 .
+
+<https://prajna.ai/intern-gds/projection_effect/3> a gds:ProjectionResult ;
+    gds:ari 3.506e-01 ;
+    gds:graphName "unicodelang" ;
+    gds:nEntities 614 ;
+    gds:side "1" ;
+    gds:spearman 2.996e-01 ;
+    gds:top10Overlap 8.182e-01 .
+

@@ -1,0 +1,14 @@
+{
+  "python": "3.10.20",
+  "platform": "macOS-15.7.7-arm64-arm-64bit",
+  "machine": "arm64",
+  "processor": "arm",
+  "cpu_count": 10,
+  "ram_gb": 16.0,
+  "networkx": "3.4.2",
+  "igraph": "1.0.0",
+  "leidenalg": "0.12.0",
+  "numpy": "2.2.6",
+  "scipy": "1.15.3",
+  "utc": "2026-09-04T07:26:14+00:00"
+}
